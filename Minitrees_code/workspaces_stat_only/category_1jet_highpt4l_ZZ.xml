@@ -1,0 +1,54 @@
+<!DOCTYPE Channel SYSTEM 'HistFactorySchema.dtd'>
+
+<Channel Name="c_1jet_highpt4l" HistoName="">
+  <Data  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_data_run_2_nominal.root" HistoName="data_run_2_BDT" HistoPath="" />
+ <StatErrorConfig RelErrorThreshold= "0 " ConstraintType="Poisson" />
+
+  <Sample Name="ggH_SM"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_ggH_SM_nominal.root" HistoPath="" HistoName="ggH_SM_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name="mu_ggH_BSM0" Val="1." Low="0." High="90." Const="True" />
+  </Sample>
+
+  <Sample Name="ggH_Khgg1_Kagg0p5"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_ggH_Khgg1_Kagg0p5_nominal.root" HistoPath="" HistoName="ggH_Khgg1_Kagg0p5_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name="mu_ggH_BSM1" Val="1." Low="0." High="90." Const="True" />
+  </Sample>
+
+  <Sample Name="ggH_Khgg1_Kaggm0p5"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_ggH_Khgg1_Kaggm0p5_nominal.root" HistoPath="" HistoName="ggH_Khgg1_Kaggm0p5_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name="mu_ggH_BSM2" Val="1." Low="0." High="90." Const="True" />
+  </Sample>
+
+  <Sample Name="ZZllll_mll4"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_ZZllll_mll4_nominal.root" HistoPath="" HistoName="ZZllll_mll4_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="vbfMG5_0p"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_vbfMG5_0p_nominal.root" HistoPath="" HistoName="vbfMG5_0p_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="gg_ZZ_bkg_2e2mu"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_gg_ZZ_bkg_2e2mu_nominal.root" HistoPath="" HistoName="gg_ZZ_bkg_2e2mu_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="gg_ZZ_bkg_4l_noTau"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_gg_ZZ_bkg_4l_noTau_nominal.root" HistoPath="" HistoName="gg_ZZ_bkg_4l_noTau_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="Redu_Bkg"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_Redu_Bkg_nominal.root" HistoPath="" HistoName="Redu_Bkg_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="ttH"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_ttH_nominal.root" HistoPath="" HistoName="ttH_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="MC_REDU_BKG"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_MC_REDU_BKG_nominal.root" HistoPath="" HistoName="MC_REDU_BKG_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="bbH_SUM"  InputFile= "../outputs1jet_highpt4l/output_category_1jet_highpt4l_bbH_SUM_nominal.root" HistoPath="" HistoName="bbH_SUM_BDT" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+</Channel>

@@ -1,0 +1,20 @@
+<!DOCTYPE Combination  SYSTEM 'HistFactorySchema.dtd'>
+
+<Combination OutputFilePrefix="./output" >
+
+  <Input>category_0jet_ZZ.xml</Input>
+  <Input>category_1jet_highpt4l_ZZ.xml</Input>
+  <Input>category_1jet_mediumpt4l_ZZ.xml</Input>
+  <Input>category_1jet_lowpt4l_ZZ.xml</Input>
+  <Input>category_2jet_VBF_highptjet_ZZ.xml</Input>
+  <Input>category_2jet_VH_highpt4l_ZZ.xml</Input>
+  <Input>category_2jet_VBF_lowptjet_ZZ.xml</Input>
+  <Input>category_2jet_VH_lowpt4l_ZZ.xml</Input>
+  <Input>category_VHlep_ZZ.xml</Input>
+  <Input>category_ttH_ZZ.xml</Input>
+
+  <Measurement Name="datastat" Lumi="1" LumiRelErr="0.0001" ExportOnly="True">
+    <POI>mu_vbf mu_ggh mu_vh</POI>
+  </Measurement>
+ 
+</Combination>

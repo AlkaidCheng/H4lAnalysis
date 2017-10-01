@@ -1,0 +1,63 @@
+#include "TFile.h"
+#include "TTree.h"
+#include "TString.h"
+#include "TROOT.h"
+#include "TH1F.h"
+#include "TF1.h"
+#include "TCanvas.h"
+#include "TStopwatch.h"
+#include <vector>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <TMath.h>
+#include <algorithm>
+
+
+void add_inputs_BSM_ggf(TString Histo_Output_Name="data_run_2_BDT", int const number_of_bin = 20, float lower_cut = -0.9, float upper_cut = 0.9, TString cat = "0jet_ptbin0", TString bsm = "vbfMG5_0p"){
+
+
+  std::cout << "adding inputs to data" << std::endl;
+  
+  TH1F *histo_output = new TH1F (Histo_Output_Name,Histo_Output_Name,number_of_bin, lower_cut, upper_cut);
+
+  TString s_ggh = "outputs/output_category_"+cat+"_"+bsm+"_nominal.root";
+/*mc15_13TeV.341505.PowhegPythia8EvtGen_CT10_AZNLOCTEQ6L1_ggH125_ZZ4lep_noTau_nominal.root";*/
+  TString s_vbf_bsm = "outputs/output_category_"+cat+"_vbfMG5_nominal.root";
+  TString s_ZZ_mll4 = "outputs/output_category_"+cat+"_ZZllll_mll4_nominal.root";
+//  TString s_ttbar = "outputs/output_category_"+cat+"_ttbar_nominal.root";
+
+/*mc15_13TeV.342556.PowhegPy8EG_CT10nloME_AZNLOCTEQ6L1_ZZllll_mll4_m4l_100_150_nominal.root";*/
+  
+  TFile *f_ggh = new TFile(s_ggh);
+  TFile *f_vbf_bsm = new TFile(s_vbf_bsm);
+  TFile *f_ZZ_mll4 = new TFile(s_ZZ_mll4);
+
+
+  TString var = bsm+"_BDT";
+  TH1F *h_ggh = (TH1F*)f_ggh->Get(var);
+  TH1F *h_vbf_bsm = (TH1F*)f_vbf_bsm->Get("vbfMG5_BDT");
+  TH1F *h_ZZ_mll4 = (TH1F*)f_ZZ_mll4->Get("ZZllll_mll4_BDT");
+
+
+  std::cout<<"************************ var =  " << var <<std::endl;
+
+  histo_output->Add(h_ggh);
+  histo_output->Add(h_vbf_bsm);
+  histo_output->Add(h_ZZ_mll4);
+  
+  std::cout<<"histo_output->Integral() = "<<histo_output->Integral()<<std::endl;  
+
+  TString s_data = "outputs/output_category_"+cat+"_data_run_2_nominal.root";
+
+  TFile *fout = new TFile(s_data, "RECREATE");
+  histo_output->Write();
+  fout->Close();
+  f_ggh->Close();
+  f_vbf_bsm->Close();
+  f_ZZ_mll4->Close();
+//  f_ttbar->Close();
+  
+}
+
+    

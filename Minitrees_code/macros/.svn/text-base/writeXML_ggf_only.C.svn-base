@@ -1,0 +1,358 @@
+#include "TH1D.h"
+#include "TFile.h"
+#include "TLegend.h"
+#include "THStack.h"
+#include "TCanvas.h"
+#include "TTree.h"
+#include "TMath.h"
+#include "TStyle.h"
+#include "THStack.h"
+#include <vector>
+#include <string>
+#include <iostream>
+#include <algorithm>
+#include <sstream>
+#include <map>
+#include "TSystem.h"
+#include <cstdlib>
+#include "TString.h"
+#include "TLatex.h"
+#include "TROOT.h"
+#include <fstream>
+#include <utility>
+#include <set>
+
+
+void writeXML_ggf_only(bool add_syst = true, bool add_stat_err = false, bool higgs_theo_syst = false,TString sample_names_file = "macros/samples_SM.txt", TString jetptcut = "35" , bool theo_syst_EFT = false){
+    
+
+    if (add_syst) std::cout<<"ADDING EXPERIMENTAL SYSTEMATIC ERRORS"<<std::endl;
+    if (add_stat_err) std::cout<<"ADDING STATISTICAL ERRORS"<<std::endl;
+    if (higgs_theo_syst) std::cout<<"ADDING THEORETICAL SYSTEMATIC ERRORS"<<std::endl;
+
+
+    TString norm_factor_file = "macros/norm_factor_EFT_kagg.txt";
+    std::ifstream filenorm_factor;
+    filenorm_factor.open (norm_factor_file, std::ifstream::in);
+    if(!filenorm_factor.is_open()) std::cout<<"Did not manage to open file:"<< filenorm_factor <<std::endl;
+    std::vector< TString > norm_factor_vector;
+    TString norm_factor;
+    while( filenorm_factor >> norm_factor ) norm_factor_vector.push_back( norm_factor );
+    
+    //EFT DEVE VALERE SOLO PER DUE JET -> Fabio mi ha chiesto di non farlo valere solo per due jet.
+    TString coupling_type = "khdz";
+    float var_up = 1.1;
+    float var_down = 0.9;
+    float value_UP = 1.1;
+    float value_DOWN = 0.9;
+    float value = 1.;
+   
+    bool skip_syst = false; 
+    bool syst_TTVA = false;
+
+    //Samples
+    std::ifstream filesample;
+    filesample.open (sample_names_file, std::ifstream::in);
+    if(!filesample.is_open()) std::cout<<"Did not manage to open file:"<< filesample <<std::endl;
+    std::vector< TString > sample;
+    TString sample_nam;
+    while( filesample >> sample_nam ) sample.push_back( sample_nam );
+    
+    
+    //Regions
+    TString region_names_file = "macros/regions.txt";
+    std::ifstream fileregion;
+    fileregion.open (region_names_file, std::ifstream::in);
+    if(!fileregion.is_open()) std::cout<<"Did not manage to open file:"<< fileregion <<std::endl;
+    std::vector< TString > region;
+    TString region_nam;
+    while( fileregion >> region_nam ) region.push_back( region_nam );
+
+
+    //Systematics
+    TString syst_names_file = "macros/systematics.txt";
+    std::ifstream filesyst;
+    filesyst.open (syst_names_file, std::ifstream::in);
+    if(!filesyst.is_open()) std::cout<<"Did not manage to open file:"<< filesyst <<std::endl;
+    std::vector< TString > systematics;
+    TString syst_nam;
+    while( filesyst >> syst_nam ) systematics.push_back( syst_nam );    
+    const int systN = systematics.size();
+    
+    
+    TString directoryrm = ".! rm -rf workspaces/*ZZ.xml";
+    gROOT->ProcessLine(directoryrm);
+    TString directory = ".! mkdir -p workspaces/";
+    gROOT->ProcessLine(directory);
+    TFile *f_input;
+    TFile *f_input_data;
+    
+
+    int basis_BSM = 0;    
+    
+    for(unsigned int j = 0; j<region.size() ; j++){
+	
+	basis_BSM = 0;      
+	ofstream * optfile = new ofstream;
+	
+	TString xmlName = "workspaces/category_"+ region[j] +"_ZZ.xml";
+	std::cout<<""<<std::endl;
+	std::cout << "file name = " << xmlName << std::endl;
+	optfile->open(xmlName);
+	TString fileName = "outputs/output_category_"+ region[j] +"_data_run_2_nominal.root";
+	f_input_data = TFile::Open(fileName);
+	if(!f_input_data) continue;
+	
+	*optfile<<"<!DOCTYPE Channel SYSTEM 'HistFactorySchema.dtd'>" << std::endl;
+	*optfile<<std::endl;
+	*optfile<<"<Channel Name=\"c_"<<region[j]<<"" <<"\" HistoName=\"\">"<<std::endl;
+	*optfile<<"  <Data " <<" InputFile= \"" << "../"+fileName << "\" HistoName=\"data_run_2_BDT\" HistoPath=\"\" />" << std::endl;
+	*optfile<<" <StatErrorConfig RelErrorThreshold= \"0 \" ConstraintType=\"Poisson\" />"<<std::endl;
+	*optfile<<std::endl;
+      
+
+	for(unsigned int k = 0; k<sample.size() ; k++){
+	
+	    std::cout << "------------------------------------- sample = " << sample[k] << std::endl;
+
+	    TString histoName = sample[k]+"_BDT";
+	    TString fileName_sample = "outputs/output_category_"+ region[j] +"_"+sample[k]+"_nominal.root";
+	    f_input = TFile::Open(fileName_sample);
+	    if(!f_input) continue;
+	    //TH1F *h_signal = (TH1F*)f_input->Get(histoName);
+
+
+            TH1F *h_signal = (TH1F*)f_input->Get(histoName);
+            value = h_signal->GetBinContent(1);
+            //cout << "value = " << value << endl;
+
+	    
+	    *optfile<<"  <Sample Name=\""<<sample[k]<<"\" "<<" InputFile= \"" << "../"+fileName_sample <<"\""  <<" HistoPath=\"\" HistoName=\""<<histoName <<"\" NormalizeByTheory=\"True\">"<<std::endl;
+
+	    if(add_stat_err) *optfile <<"    <StatError Activate=\"True\"/> " <<std::endl;
+	    if(!add_stat_err) *optfile <<"    <StatError Activate=\"False\"/> " <<std::endl;
+	    
+	    std::cout << "DONE nominal "<< std::endl;	    
+/*	    
+	    if ( (region.at(j)!="0jet_ptbin0")&&(region.at(j)!="0jet_ptbin1")&&(region.at(j)!="VHlep_ptbin0")&&(region.at(j)!="VHlep_ptbin1") ){
+		if(add_syst){
+		    for(int m = 0 ; m< systN; m++){
+			if ( systematics.at(m)!="JET_JER_SINGLE_NP" ){
+			    TString fileName_UP = "../outputs/output_category_"+region[j]+"_"+sample[k]+"_"+systematics[m]+"__1up.root";
+			    TString fileName_DOWN = "../outputs/output_category_"+region[j]+"_"+sample[k]+"_"+systematics[m]+"__1down.root";
+                            // ORDER: StatError | HistoSys | OverallSys | ShapeSys | NormFactor | ShapeFactor )	
+			    *optfile<<"    <HistoSys Name=\""<<systematics.at(m)<<"\" HistoFileHigh=\""<<fileName_UP<<"\" HistoNameHigh=\""<<histoName<<"\" HistoFileLow=\""<<fileName_DOWN<<"\" HistoNameLow=\""<<histoName<<"\" />" << std::endl;
+			    std::cout << "DONE "<<systematics.at(m)<< std::endl;	    
+			} 
+			//else if ( systematics.at(m)=="JET_JER_SINGLE_NP" ){
+			//    TString fileName_UP = "../outputs/output_category_"+region[j]+"_"+sample[k]+"_"+systematics[m]+"__1up.root";
+			//    TString fileName_DOWN = "../outputs/output_category_"+region[j]+"_"+sample[k]+"_nominal.root";
+			//    *optfile<<"    <HistoSys Name=\""<<systematics.at(m)<<"\" HistoFileHigh=\""<<fileName_UP<<"\" HistoNameHigh=\""<<histoName<<"\" HistoFileLow=\""<<fileName_DOWN<<"\" HistoNameLow=\""<<histoName<<"\" />" << std::endl;
+			//    std::cout << "DONE "<<systematics.at(m)<< std::endl;	    
+			//}
+
+		    }
+		}//close syst
+	    }//close loop on categories without jets
+*/	    
+//Redu_Muons
+//Redu_Elec
+//
+         if(add_syst){
+	  skip_syst = false;
+          syst_TTVA = false;
+          if(sample[k]=="Redu_Muons" ||  sample[k]=="Redu_Elec" ) skip_syst = true;
+          if(sample[k]=="ggH125" ||  sample[k]=="ZZllll_mll4_m4l_100_150" || sample[k]=="ZZllll_mll4" ) syst_TTVA = true;
+
+	  if(!skip_syst){
+           for(int m = 0 ; m<systN; m++){
+            TString fileName_UP ="";
+            TString fileName_DOWN ="";
+
+
+            if(systematics[m]!="JET_JER_SINGLE_NP"  && systematics[m]!="weight_JvtEfficiency" && systematics[m]!="MUONS_TTVA__byHand"){// && systematics[m]!="weight_JvtEfficiencyUp"){
+              	fileName_UP = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+"__1up.root";
+//"outputs/output_category_"
+              	TFile *f_input_UP = TFile::Open(fileName_UP);
+              	if(!f_input_UP) continue;
+              	TH1F *h_signal_UP = (TH1F*)f_input_UP->Get(histoName);
+              	value_UP = h_signal_UP->GetBinContent(1);
+
+              	fileName_DOWN = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+"__1down.root";
+
+		std::cout << "file = " << fileName_DOWN << std::endl;
+
+              	TFile *f_input_DOWN = TFile::Open(fileName_DOWN);
+              	if(!f_input_DOWN) continue;
+              	TH1F *h_signal_DOWN = (TH1F*)f_input_DOWN->Get(histoName);
+              	value_DOWN = h_signal_DOWN->GetBinContent(1);
+              	f_input_DOWN->Close();
+              	f_input_UP->Close();
+
+	      	var_up = value_UP / value;
+              	var_down = value_DOWN / value;
+//pruning by hand
+    //          if( !((var_up)<1.0025 && (var_up)>0.9975) || !((var_down)<1.0025 && (var_down)>0.9975) ) 
+                *optfile<<"    <OverallSys Name=\"" << systematics[m] << "\" High= \""<< var_up <<"\" Low=\"" << var_down << "\"/>" << std::endl;
+            }
+	    if(systematics[m]=="JET_JER_SINGLE_NP" /*|| systematics[m]=="NormSystematic"*/){
+		
+		if (systematics[m]=="JET_JER_SINGLE_NP") fileName_UP = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+"__1up.root";
+                if (systematics[m]=="NormSystematic") fileName_UP = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+".root";
+                TFile *f_input_UP = TFile::Open(fileName_UP);
+                if(!f_input_UP) continue;
+                TH1F *h_signal_UP = (TH1F*)f_input_UP->Get(histoName);
+                value_UP = h_signal_UP->GetBinContent(1);
+
+                if (systematics[m]=="JET_JER_SINGLE_NP") fileName_DOWN = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+"__1up.root";
+                if (systematics[m]=="NormSystematic") fileName_DOWN = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+".root";
+                std::cout << "file = " << fileName_DOWN << std::endl;
+
+                TFile *f_input_DOWN = TFile::Open(fileName_DOWN);
+                if(!f_input_DOWN) continue;
+                TH1F *h_signal_DOWN = (TH1F*)f_input_DOWN->Get(histoName);
+                value_DOWN = h_signal_DOWN->GetBinContent(1);
+                f_input_DOWN->Close();
+                f_input_UP->Close();
+
+                var_up = value_UP / value;
+                //var_down = value_DOWN / value;
+                var_down = value / value_DOWN;		// SYMMETRIZING THE SYSTEMATICS
+//pruning by hand
+//                if( !((var_up)<1.0025 && (var_up)>0.9975) || !((var_down)<1.0025 && (var_down)>0.9975) ) 
+                *optfile<<"    <OverallSys Name=\"" << systematics[m] << "\" High= \""<< var_up <<"\" Low=\"" << var_down << "\"/>" << std::endl;
+	
+	    }
+//ADDING IT TO SOLVE ISSUE WITH PRODV05 
+//weight_JvtEfficiencyDown
+//weight_JvtEfficiencyUP
+	    if(systematics[m]=="weight_JvtEfficiency"){  
+		fileName_UP = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+"Up.root";
+                TFile *f_input_UP = TFile::Open(fileName_UP);
+                if(!f_input_UP) continue;
+                TH1F *h_signal_UP = (TH1F*)f_input_UP->Get(histoName);
+                value_UP = h_signal_UP->GetBinContent(1);
+                fileName_DOWN = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+"Down.root";
+                std::cout << "file = " << fileName_DOWN << std::endl;
+                TFile *f_input_DOWN = TFile::Open(fileName_DOWN);
+                if(!f_input_DOWN)continue;
+                TH1F *h_signal_DOWN = (TH1F*)f_input_DOWN->Get(histoName);
+                value_DOWN = h_signal_DOWN->GetBinContent(1);
+                f_input_DOWN->Close();
+                f_input_UP->Close();
+
+
+                var_up = value_UP / value;
+                var_down = value_DOWN / value;
+
+                *optfile<<"    <OverallSys Name=\"" << systematics[m] << "\" High= \""<< var_up <<"\" Low=\"" << var_down << "\"/>" << std::endl;
+
+
+	    }
+
+//Haonan add this
+//For Prodv06
+//Flat 1% for TTVA
+/*
+           if(systematics[m]=="MUONS_TTVA__byHand" && syst_TTVA == true){
+                fileName_UP = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+"_up.root";
+                TFile *f_input_UP = TFile::Open(fileName_UP);
+                if(!f_input_UP) continue;
+                TH1F *h_signal_UP = (TH1F*)f_input_UP->Get(histoName);
+                value_UP = h_signal_UP->GetBinContent(1);
+                fileName_DOWN = "outputs/output_category_"+ region[j]+ "_"+ sample[k] + "_" + systematics[m]+"_down.root";
+                std::cout << "file = " << fileName_DOWN << std::endl;
+                TFile *f_input_DOWN = TFile::Open(fileName_DOWN);
+                if(!f_input_DOWN)continue;
+                TH1F *h_signal_DOWN = (TH1F*)f_input_DOWN->Get(histoName);
+                value_DOWN = h_signal_DOWN->GetBinContent(1);
+                f_input_DOWN->Close();
+                f_input_UP->Close();
+
+
+                var_up = value_UP / value;
+                var_down = value_DOWN / value;
+
+                *optfile<<"    <OverallSys Name=\"" << systematics[m] << "\" High= \""<< var_up <<"\" Low=\"" << var_down << "\"/>" << std::endl;
+
+
+            }
+*/
+
+
+	  }
+	 }
+        }//close syst
+
+	    
+	    if(sample[k]=="vbfMG5"){
+	//	*optfile <<"    <NormFactor Name=\"mu_vbf\" Val=\"1.\" Low=\"0.\" High=\"20.\" Const=\"True\" />" << std::endl;
+
+	    } else if(sample[k].Contains("ggH125")){
+//0.974 1.0264
+//		*optfile <<"    <OverallSys Name=\"ATLAS_BR_VV\" High=\"1.0264\" Low=\"0.974\" />" << std::endl;
+		*optfile <<"    <NormFactor Name=\"mu_ggh\" Val=\"1.\" Low=\"0.\" High=\"90.\" Const=\"True\" />" << std::endl;
+
+	    } else if( (sample[k]=="WH125")||(sample[k]=="ZH125") ){
+		*optfile <<"    <NormFactor Name=\"mu_vh\" Val=\"1.\" Low=\"0.\" High=\"90.\" Const=\"True\" />" << std::endl;
+	    } else if( sample[k].Contains("gH") ){
+		*optfile <<"    <NormFactor Name=\"mu_"<< norm_factor_vector[basis_BSM]  <<"\" Val=\"1.\" Low=\"0.\" High=\"90.\" Const=\"True\" />" << std::endl;
+//flat 20%
+		basis_BSM++;
+	    }
+	    
+	    
+	    if(add_syst) *optfile <<"    <OverallSys Name=\"ATLAS_LUMI\" High=\"1.03\" Low=\"0.97\" />" << std::endl;
+// aggiungere sistematiche su reducilbe
+	    if(add_syst){
+		if(sample[k]=="Redu_Muons"){  
+			//errore per categoria
+/*
+                    if(region[j]=="2jet_VH")*optfile <<"    <OverallSys Name=\"ATLAS_norm_SF_H4l_redbkg\" High=\"1.145\" Low=\"0.855\" />" << std::endl;
+*/
+		}
+                if(sample[k]=="Redu_Elec" ){
+			//errore per categoria
+/*
+                    if(region[j]=="2jet_VH")*optfile <<"    <OverallSys Name=\"ATLAS_norm_SF_H4l_redbkg\" High=\"1.333\" Low=\"0.667\" />" << std::endl;
+*/
+		} 
+//from Yellow report 4
+// https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV
+//
+                if(sample[k]=="ZZllll"){
+//		   *optfile <<"    <OverallSys Name=\"QCDscale_VV\" High=\"1.05\" Low=\"0.93\" />" << std::endl;
+//                   *optfile <<"    <OverallSys Name=\"pdf_qq\" High=\"1.05\" Low=\"0.95\" />" << std::endl;
+		}
+//ggZZ_4l','ggZZ_2mu2e'
+		if(sample[k]=="ggZZ_4l"){
+/*
+		   *optfile <<"    <OverallSys Name=\"QCDscale_ggVV\" High=\"1.60\" Low=\"0.40\" />" << std::endl;
+                   *optfile <<"    <OverallSys Name=\"pdf_gg\" High=\"1.08\" Low=\"0.92\" />" << std::endl;
+*/
+		}
+                if(sample[k]=="ggZZ_2mu2e"){
+/*
+                   *optfile <<"    <OverallSys Name=\"QCDscale_ggVV\" High=\"1.60\" Low=\"0.40\" />" << std::endl;
+                   *optfile <<"    <OverallSys Name=\"pdf_gg\" High=\"1.08\" Low=\"0.92\" />" << std::endl;
+*/
+                }
+
+	    }
+//            *optfile<<"    <OverallSys Name=\"ATLAS_MUON_TTVA_SYS\" High= \"1.01\" Low=\"0.99\"/>" << std::endl;
+	    *optfile<<"  </Sample>"<<std::endl;
+	    *optfile<<std::endl;
+	    
+	}//close sample
+	
+	*optfile<<"</Channel>"<< std::endl;
+	optfile->close();	
+	f_input->Close();
+
+    
+    }//close region
+    
+    f_input_data->Close();
+	
+
+}

@@ -1,0 +1,16 @@
+<!DOCTYPE Combination  SYSTEM 'HistFactorySchema.dtd'>
+
+<Combination OutputFilePrefix="./output" >
+ 
+  <Input>category_0jet_ZZ.xml</Input>
+  <Input>category_1jet_ZZ.xml</Input>
+  <Input>category_2jet_VBF_ZZ.xml</Input>
+  <Input>category_2jet_VH_ZZ.xml</Input>
+  <Input>category_VHlep_ZZ.xml</Input>
+
+
+  <Measurement Name="datastat" Lumi="1" LumiRelErr="0.0001" ExportOnly="True">
+    <POI>mu_vbf mu_ggh mu_vh</POI>
+  </Measurement>
+ 
+</Combination>

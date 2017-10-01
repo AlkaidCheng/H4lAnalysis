@@ -1,0 +1,9 @@
+1. Kinematic plot of a sigle parameter from a particular Minitree root file, type:
+> python KinematicPlot.py /PATH/TO/MINITREE/Minitree.root --param="pt4l_fsr" --weight="weight_couplings" --nbin=100 --min=0 --max=400 -o=./result
+This will produce a weighted plot of the parameter pt4l_fsr with the weight weight_couplings with 100 bins and x axis ranging from 0 to 400(GeV)
+
+2. Kinematic plot of multiple parameters from multiple Minitree root files, first prepare
+A. input file containing the list of minitree root files, with the first line indicating the directory of the root files, e.g. input.txt
+B. param file containing the list of parameters to be plotted, with the first line indicating the weight to be used; include the number of bins x minimum and x maximum separated by parenthesis after the parameter
+then type:
+> python KinematicPlots.py input.txt --param=param.txt -o=./result

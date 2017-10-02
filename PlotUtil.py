@@ -11,9 +11,9 @@ class PlotUtil(SimpleSelection,WeightInfo):
   self.c = ROOT.TCanvas()
   
  def plot_1D_weighted(self ,param, weight,nbin,xmin,xmax,title = "", category = None, reweight_type = None):
+  h = ROOT.TH1D(param,title,nbin,xmin,xmax)  
   param = "self.t.{0}".format(param)
   weight = "self.t.{0}".format(weight)
-  h = ROOT.TH1D(title,title,nbin,xmin,xmax)
   for i in range(self.NEntries):
    self.t.GetEntry(i)
    Prod_Type = self.GetProd_Type()
@@ -22,7 +22,7 @@ class PlotUtil(SimpleSelection,WeightInfo):
     if reweight_type is None:
      h.Fill(eval(param),self.luminosity*eval(weight)) 
     else:
-     h.Fill(eval(param),self.luminosity*self.reweight_factor[reweight_type][Prod_Type_pt]*eval(weight))
+     h.Fill(eval(param),self.luminosity*self.reweight_factor[reweight_type][self.category_map[Prod_Type_pt]]*eval(weight))
   return h
  
  def format_plot(self, h, title = None, xtitle = "", ytitle = "", style = "", nostat = True, normalize = False, logy = False, save = True, output = "result.pdf"):

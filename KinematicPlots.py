@@ -35,5 +35,5 @@ for f in files:
   nbin = eval(elem[1])
   xmin = eval(elem[2])
   xmax = eval(elem[3])
-  h = plot.plot_1D_weighted(None, param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,f.replace(".root","")))
+  h = plot.plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,f.replace(".root","")))
   plot.format_plot(h, xtitle = param, ytitle = "Event", output = join(outdir,h.GetTitle()+".pdf"))

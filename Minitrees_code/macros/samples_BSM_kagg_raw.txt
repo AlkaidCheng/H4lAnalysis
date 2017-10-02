@@ -1,4 +1,0 @@
-ggH_SM_Powheg
-ggH_SM
-ggH_Khgg1_Kagg0p5
-ggH_Khgg1_Kaggm0p5

@@ -1,7 +1,0 @@
-vbfMG5_0p
-ggH_SM
-ggH_SF_powheg
-vbf_SF_pohweg
-WH_m_SF_pythia
-WH_p_SF_pythia
-ZH_SF_pythia

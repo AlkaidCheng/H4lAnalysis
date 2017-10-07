@@ -1,13 +1,18 @@
 import ROOT
 from Minitree_H4l import Minitree_H4l
 from Selection import SimpleSelection
-from PlotUtil import *
+import PlotUtil
+from PlotUtil import PlotClass
 import argparse
 from pdb import set_trace
 from os.path import join
 from os import system
-ROOT.gROOT.SetBatch(ROOT.kTRUE)
+ROOT.gROOT.SetBatch(True)
 
+# For use of python 2.7+ in lxplus, type:
+# $setupATLAS
+# $localSetupPython 2.7.3-x86_64-slc6-gcc47
+# $localSetupROOT --rootVer=5.34.22-x86_64-slc6-gcc48-opt
 parser = argparse.ArgumentParser()
 parser.add_argument(
     'input',help="""input txt file containing the list of root files to be analyzed""")
@@ -19,6 +24,8 @@ parser.add_argument(
     '--combine', action = "store_true",help="""Combine the output root files""")  
 parser.add_argument(
     '--reweight', action = "store_true",help="""Include the reweight_factor in the weigiting""")   
+parser.add_argument(
+    '--stack', action = "store_true",help="""Include the reweight_factor in the weigiting""")
 args = parser.parse_args()
 
 RootIn = open(args.input)
@@ -35,25 +42,60 @@ outdir = args.outdir
 
 out_list = []
 
-for f in files:
- print join(dir,f)
- plot = PlotUtil(join(dir,f),"tree_incl_all")
- out_name = join(outdir,f.replace(".root","_weighted.root"))
- out_list.append(out_name)
- out = ROOT.TFile(out_name,"RECREATE")
- t = out.mkdir(f.strip(".root"))
- t.cd() 
- _reweight_type = None
- if args.reweight:
-  _reweight_type = plot.sample[f.replace(".root","")][1]
- for elem in params:
-  param = elem[0]
-  nbin = eval(elem[1])
-  xmin = eval(elem[2])
-  xmax = eval(elem[3])
-  h = plot.plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,f.replace(".root","")), reweight_type = _reweight_type)
-  plot.format_plot(h, xtitle = param, ytitle = "Event", output = join(outdir,h.GetTitle()+".pdf"))
-  out.Write()
- out.Close()
-if args.combine:
- os.system("hadd combined.root {0}".format(" ".join(out_list)))
+if args.stack:
+ hs = {elem[0]:ROOT.THStack("hs","") for elem in params}
+ h_proc = {elem[0]:{} for elem in params}
+ plot = []
+ for f in files:
+  print join(dir,f)
+  sample = f.strip(".root")   #Name of the Minitree without extension
+  plot.append(PlotClass(join(dir,f),"tree_incl_all"))
+  reweight_type = None if not args.reweight else Minitree_H4l.sample[sample].reweight_type
+  for elem in params:
+   param = elem[0]
+   nbin, xmin, xmax = map(eval,elem[1:])
+   data_driven = Minitree_H4l.sample[sample].IsDataDriven
+   h = plot[-1].plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type, data_driven = False)
+   proc = plot[-1].sample[sample].proc
+   if proc not in h_proc[param]:
+    h_proc[param][proc] = h
+   else:
+    try:
+     h_proc[param][proc].Add(h)
+    except:
+     set_trace()
+ for param in h_proc:
+  leg = ROOT.TLegend(0.7,0.85 - 0.05*len(h_proc[param]),0.85,0.85)
+  for i,proc in enumerate(h_proc[param]):
+   if proc in Minitree_H4l.proc_type["bkg"]:  
+    PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["bkg"].replace("Fill_Color",PlotUtil.ColorWheel[i]))
+   else:
+    PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["sgn"])
+   hs[param].Add(h_proc[param][proc])
+   leg.AddEntry(h_proc[param][proc],proc,"f");
+  PlotUtil.format_plot(hs[param], xtitle = param, ytitle = "Event",output = join(outdir,"{0}_Stacked.pdf".format(param)),legend = leg)
+  #leg.Draw()
+  
+  
+   
+else:
+ for f in files:  
+  print join(dir,f)
+  sample = f.strip(".root")   #Name of the Minitree without extension
+  plot = PlotClass(join(dir,f),"tree_incl_all")
+  out_name = join(outdir,f.replace(".root","_weighted.root"))
+  out_list.append(out_name)
+  out = ROOT.TFile(out_name,"RECREATE")
+  t = out.mkdir(f.strip(".root"))
+  t.cd() 
+  reweight_type = None if not args.reweight else Minitree_H4l.sample[sample].reweight_type
+  for elem in params:
+   param = elem[0]
+   nbin, xmin, xmax = map(eval,elem[1:])
+   data_driven = Minitree_H4l.sample[sample].IsDataDriven
+   h = plot.plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type, data_driven = data_driven)
+   PlotUtil.format_plot(h, xtitle = param, ytitle = "Event", output = join(outdir,h.GetTitle()+".pdf"))
+   out.Write()
+  out.Close()
+ if args.combine:
+  os.system("hadd combined.root {0}".format(" ".join(out_list)))

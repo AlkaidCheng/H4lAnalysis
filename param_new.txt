@@ -1,0 +1,10 @@
+#weight_couplings
+#phi  100  -3.14  3.14
+pt4l_fsr  100  0  400
+#m4l_fsr  100  0  1000
+#lepton_pt[0]  100  0  1000
+#lepton_phi[0]  100  -3.14  3.14
+#lepton_eta[0]  100  -3.14  3.14
+#jet_pt[0]  100  0  1000
+#jet_phi[0]  100  -3.14  3.14
+#jet_eta[0]  100  -3.14  3.14

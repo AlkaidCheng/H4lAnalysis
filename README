@@ -6,4 +6,9 @@ This will produce a weighted plot of the parameter pt4l_fsr with the weight weig
 A. input file containing the list of minitree root files, with the first line indicating the directory of the root files, e.g. input.txt
 B. param file containing the list of parameters to be plotted, with the first line indicating the weight to be used; include the number of bins x minimum and x maximum separated by parenthesis after the parameter
 then type:
-> python KinematicPlots.py input.txt --param=param.txt -o=./result
+> python KinematicPlots.py input.txt --param=param.txt -o=./result 
+To include the reweight_factor for higher order QCD corrections between NLO and N3LO cross-section, type:
+> python KinematicPlots.py input.txt --param=param.txt -o=./result --reweight
+To combine the resulting root files into a signle root file, add the option --combine
+To make a stacked plot of all processes in the input file, type:
+> python KinematicPlots.py input.txt --param=param.txt -o=./result --reweight --stack

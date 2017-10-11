@@ -4,7 +4,19 @@ from Selection import SimpleSelection
 from Selection import WeightInfo
 from pdb import set_trace
 
-ColorWheel = ["42","39","46","606","862","8","9","30","49","9"]
+class ColorWheel:
+ sgn = ["42","39","46","606","862","8","9","30","49","9"]
+ bkg = ["4","2","3","6"]
+ def __init__(self):
+  self.sgn_index = -1
+  self.bkg_index = -1
+ def next_sgn(self):
+  self.sgn_index = (self.sgn_index + 1) % len(sgn-1)
+  return sgn[self.sgn_index]
+ def next_bkg(self):
+  self.bkg_index = (self.bkg_index + 1) % len(bkg-1)
+  return bkg[self.bkg_index]
+
 
 style = {
  "bkg":"LineColor=1,LineWidth=3,FillColor=Fill_Color",
@@ -77,7 +89,7 @@ class PlotClass(SimpleSelection,WeightInfo):
     else:
      h_data_driven = ROOT.TH1D("","",nbin,xmin,xmax)
     for i in range(nbin):
-     h_data_driven.SetBinContent(i,self.Data_Driven_Count[category])
+     h_data_driven.SetBinContent(i,self.Data_Driven_Count[category]/nbin)
     h_data_driven.Divide(h_dict[category])
     h_dict[category].Add(h_data_driven)
   if result_by_category:

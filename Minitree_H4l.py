@@ -4,13 +4,10 @@ from pdb import set_trace
 from array import array
 
 class Minitree_H4l:
- sgn_bkg_block = {
- "sgn": ["ggH"],
- "bkg": ["redu_bbH","redu_WWZ","redu_WZZ","ZZZ","redu_ttZ","redu_ttW","ZZllll","VBF","gg_ZZ"]}
- 
+
  proc_type = {
- "sgn": ["ggH"],
- "bkg": ["redu_bbH","redu_WWZ","redu_WZZ","ZZZ","redu_ttZ","redu_ttW","ZZllll","VBF","gg_ZZ"]}
+ "sgn": ["ggH","VBF"],
+ "bkg": ["redu_bbH","redu_WWZ","redu_WZZ","ZZZ","redu_ttZ","redu_ttW","ZZllll","gg_ZZ"]}
  
  SamStruct = namedtuple("SamStruct", "proc_id proc reweight_type IsDataDriven")
  sample = {

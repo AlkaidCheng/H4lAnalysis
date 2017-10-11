@@ -45,6 +45,7 @@ out_list = []
 if args.stack:
  hs = {elem[0]:ROOT.THStack("hs","") for elem in params}
  h_proc = {elem[0]:{} for elem in params}
+ logy_proc = {elem[0]:("logy" in elem) for elem in params}
  plot = []
  for f in files:
   print join(dir,f)
@@ -66,14 +67,15 @@ if args.stack:
      set_trace()
  for param in h_proc:
   leg = ROOT.TLegend(0.7,0.85 - 0.05*len(h_proc[param]),0.85,0.85)
-  for i,proc in enumerate(h_proc[param]):
+  Color = PlotUtil.ColorWheel()
+  for proc in h_proc[param]:
    if proc in Minitree_H4l.proc_type["bkg"]:  
-    PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["bkg"].replace("Fill_Color",PlotUtil.ColorWheel[i]))
+    PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["bkg"].replace("Fill_Color",Color.next_bkg()))
    else:
-    PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["sgn"])
+    PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["sgn"].replace("Fill_Color",Color.next_sgn()))
    hs[param].Add(h_proc[param][proc])
    leg.AddEntry(h_proc[param][proc],proc,"f");
-  PlotUtil.format_plot(hs[param], xtitle = param, ytitle = "Event",output = join(outdir,"{0}_Stacked.pdf".format(param)),legend = leg)
+  PlotUtil.format_plot(hs[param], xtitle = param, ytitle = "Event",output = join(outdir,"{0}_Stacked.pdf".format(param)),legend = leg,logy=logy_proc[param])
   #leg.Draw()
   
   

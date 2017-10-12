@@ -1,7 +1,7 @@
 import ROOT
 from Minitree_H4l import Minitree_H4l
 from Selection import SimpleSelection
-from Selectio import WeightInfo
+from Selection import WeightInfo
 import PlotUtil
 from PlotUtil import PlotClass
 import argparse
@@ -57,7 +57,7 @@ if args.stack:
   reweight_type = None if not args.reweight else Minitree_H4l.sample[sample].reweight_type
   for elem in params:
    param = elem[0]
-   nbin, xmin, xmax = map(eval,elem[1:])
+   nbin, xmin, xmax = map(eval,elem[1:4])
    data_driven = args.datadriven and Minitree_H4l.sample[sample].IsDataDriven
    h = plots[-1].plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type, data_driven = data_driven)
    proc = plots[-1].sample[sample].proc
@@ -72,7 +72,7 @@ if args.stack:
    if proc in Minitree_H4l.proc_type["bkg"]:  
     PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["bkg"].replace("Fill_Color",Color.next_bkg()))
    else:
-    PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["sgn"].replace("Fill_Color",Color.next_sgn()))
+    PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["sgn"].replace("Line_Color",Color.next_sgn()))
    hs[param].Add(h_proc[param][proc])
    leg.AddEntry(h_proc[param][proc],proc,"f");
   PlotUtil.format_plot(hs[param], xtitle = param, ytitle = "Event",output = join(outdir,"{0}_Stacked.pdf".format(param)),legend = leg,logy=logys[param])
@@ -91,7 +91,7 @@ else:
   reweight_type = None if not args.reweight else Minitree_H4l.sample[sample].reweight_type
   for elem in params:
    param = elem[0]
-   nbin, xmin, xmax = map(eval,elem[1:])
+   nbin, xmin, xmax = map(eval,elem[1:4])
    data_driven = Minitree_H4l.sample[sample].IsDataDriven
    h = plot.plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type, data_driven = data_driven)
    PlotUtil.format_plot(h, xtitle = param, ytitle = "Event", output = join(outdir,h.GetTitle()+".pdf"))

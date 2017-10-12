@@ -5,22 +5,22 @@ from Selection import WeightInfo
 from pdb import set_trace
 
 class ColorWheel:
- sgn = ["42","39","46","606","862","8","9","30","49","9"]
- bkg = ["4","2","3","6"]
+ bkg = ["42","39","46","606","862","8","9","30","49","9"]
+ sgn = ["4","2","3","6"]
  def __init__(self):
   self.sgn_index = -1
   self.bkg_index = -1
  def next_sgn(self):
-  self.sgn_index = (self.sgn_index + 1) % len(sgn-1)
-  return sgn[self.sgn_index]
+  self.sgn_index = (self.sgn_index + 1) % len(self.sgn)
+  return self.sgn[self.sgn_index]
  def next_bkg(self):
-  self.bkg_index = (self.bkg_index + 1) % len(bkg-1)
-  return bkg[self.bkg_index]
+  self.bkg_index = (self.bkg_index + 1) % len(self.bkg)
+  return self.bkg[self.bkg_index]
 
 
 style = {
- "bkg":"LineColor=1,LineWidth=3,FillColor=Fill_Color",
- "sgn":"LineColor=4,LineWidth=3,FillColor=0",
+ "bkg":"LineColor=1,LineWidth=1,FillColor=Fill_Color",
+ "sgn":"LineColor=Line_Color,LineWidth=1,LineStyle=2,FillColor=0",
  "Uncertainty":"FillStyle=3244,FillColor=16"}
 
 def Set(obj, **kwargs):

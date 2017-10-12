@@ -1,11 +1,11 @@
 #weight_couplings
 phi  20  -3.14  3.14
-pt4l_fsr  100  0  400
-m4l_fsr  100  60 300 logy
+pt4l_fsr  100  0  400 logy
+m4l_fsr  100  60 300
 phi1 20 -3.14 3.14
-lepton_pt[0]  100  0  400
+lepton_pt[0]  100  0  400 logy
 lepton_phi[0]  20  -3.14  3.14
 lepton_eta[0]  20  -3.14  3.14
-jet_pt[0]  100  0  400
+jet_pt[0]  100  0  400 logy
 jet_phi[0]  20  -3.14  3.14
 jet_eta[0]  20 -3.14  3.14

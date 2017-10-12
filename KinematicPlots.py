@@ -1,6 +1,7 @@
 import ROOT
 from Minitree_H4l import Minitree_H4l
 from Selection import SimpleSelection
+from Selectio import WeightInfo
 import PlotUtil
 from PlotUtil import PlotClass
 import argparse
@@ -26,6 +27,8 @@ parser.add_argument(
     '--reweight', action = "store_true",help="""Include the reweight_factor in the weigiting""")   
 parser.add_argument(
     '--stack', action = "store_true",help="""Include the reweight_factor in the weigiting""")
+parser.add_argument(
+    '--datadriven', action = "store_true",help="""Include data driven backgrounds""")
 args = parser.parse_args()
 
 RootIn = open(args.input)
@@ -44,27 +47,24 @@ out_list = []
 
 if args.stack:
  hs = {elem[0]:ROOT.THStack("hs","") for elem in params}
- h_proc = {elem[0]:{} for elem in params}
- logy_proc = {elem[0]:("logy" in elem) for elem in params}
- plot = []
+ h_proc = {elem[0]:{} for elem in params}    # Dictionary containing histograms for each parameter for each process
+ logys = {elem[0]:("logy" in elem) for elem in params}
+ plots = []
  for f in files:
   print join(dir,f)
-  sample = f.strip(".root")   #Name of the Minitree without extension
-  plot.append(PlotClass(join(dir,f),"tree_incl_all"))
+  sample = f.strip(".root")   
+  plots.append(PlotClass(join(dir,f),"tree_incl_all"))
   reweight_type = None if not args.reweight else Minitree_H4l.sample[sample].reweight_type
   for elem in params:
    param = elem[0]
    nbin, xmin, xmax = map(eval,elem[1:])
-   data_driven = Minitree_H4l.sample[sample].IsDataDriven
-   h = plot[-1].plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type, data_driven = False)
-   proc = plot[-1].sample[sample].proc
+   data_driven = args.datadriven and Minitree_H4l.sample[sample].IsDataDriven
+   h = plots[-1].plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type, data_driven = data_driven)
+   proc = plots[-1].sample[sample].proc
    if proc not in h_proc[param]:
     h_proc[param][proc] = h
    else:
-    try:
      h_proc[param][proc].Add(h)
-    except:
-     set_trace()
  for param in h_proc:
   leg = ROOT.TLegend(0.7,0.85 - 0.05*len(h_proc[param]),0.85,0.85)
   Color = PlotUtil.ColorWheel()
@@ -75,9 +75,7 @@ if args.stack:
     PlotUtil.GraphSet(h_proc[param][proc],PlotUtil.style["sgn"].replace("Fill_Color",Color.next_sgn()))
    hs[param].Add(h_proc[param][proc])
    leg.AddEntry(h_proc[param][proc],proc,"f");
-  PlotUtil.format_plot(hs[param], xtitle = param, ytitle = "Event",output = join(outdir,"{0}_Stacked.pdf".format(param)),legend = leg,logy=logy_proc[param])
-  #leg.Draw()
-  
+  PlotUtil.format_plot(hs[param], xtitle = param, ytitle = "Event",output = join(outdir,"{0}_Stacked.pdf".format(param)),legend = leg,logy=logys[param])
   
    
 else:

@@ -84,14 +84,11 @@ class PlotClass(SimpleSelection,WeightInfo):
    if reweight_type is not None:
     h_dict[category].Scale(self.reweight_factor[reweight_type][self.category_map[category]])
    if data_driven:
-    if param in self.optimised_binning:
-     h_data_driven = ROOT.TH1D("","",len(self.optimised_binning[param])-1,self.optimised_binning[param])
-    else:
-     h_data_driven = ROOT.TH1D("","",nbin,xmin,xmax)
+    count_data_driven = self.Data_Driven_Count[category]
     for i in range(nbin):
-     h_data_driven.SetBinContent(i,self.Data_Driven_Count[category]/nbin)
-    h_data_driven.Divide(h_dict[category])
-    h_dict[category].Add(h_data_driven)
+     count_old = h_dict[category].GetBinContent(i)
+     count_data_driven_normalized = count_data_driven*(h_dict[category].GetBinWidth(i)/(xmax-xmin))
+     h_dict[category].SetBinContent(i,count_old+count_data_driven)
   if result_by_category:
    return h_dict  
   else:

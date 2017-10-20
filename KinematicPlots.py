@@ -30,7 +30,9 @@ parser.add_argument(
 parser.add_argument(
     '--datadriven', action = "store_true",help="""Include data driven backgrounds""")
 parser.add_argument(
-    '--obs',action = "store_true",help="""Include observed data in the analysis""")    
+    '--obs',action = "store_true",help="""Include observed data in the analysis""")   
+parser.add_argument(
+    '--lumiscale',default = 1.,help="""Luminosity scale""")  
 args = parser.parse_args()
 
 RootIn = open(args.input)
@@ -62,7 +64,7 @@ if args.stack:
    param = elem[0]
    nbin, xmin, xmax = map(eval,elem[1:4])
    proc = plots[-1].sample[sample].proc  # Identify the type of process the Minitree belongs to
-   h, h_by_category = plots[-1].plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type)
+   h, h_by_category = plots[-1].plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type,lumiscale = args.lumiscale)
    if proc not in h_proc[param]:
     h_proc[param][proc] = h
    else:
@@ -128,24 +130,9 @@ else:
    param = elem[0]
    nbin, xmin, xmax = map(eval,elem[1:4])
    data_driven = Minitree_H4l.sample[sample].IsDataDriven
-   h = plot.plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type, data_driven = data_driven)
+   h = plot.plot_1D_weighted(param, weight ,nbin,xmin,xmax,title = "{0}_{1}".format(param,sample), reweight_type = reweight_type,lumiscale = args.lumiscale)
    PlotUtil.format_plot(h, xtitle = param, ytitle = "Event", output = join(outdir,h.GetTitle()+".pdf"))
    out.Write()
   out.Close()
  if args.combine:
   os.system("hadd combined.root {0}".format(" ".join(out_list)))
-
-"""
-  for param in h_data_driven:
-   for category in h_data_driven[param]:
-     h_data_driven[param][category] = PlotUtil.merge(h_data_driven[param][category])
-     normalization = h_data_driven[param][category].Integral()
-     DatDri_cnt = WeightInfo.Data_Driven_Count[category]
-     if normalization != 0:
-      for i in range(1,h_data_driven[param][category].GetNbinsX()+1):
-       cnt = h_data_driven[param][category].GetBinContent(i)
-       h_data_driven[param][category].SetBinContent(i,DatDri_cnt*(cnt/normalization))
-     else:
-      print "No data driven event for category: {0}".format(category)
-   h_data_driven[param] =  PlotUtil.merge(h_data_driven[param])
-""" 

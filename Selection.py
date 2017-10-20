@@ -2,7 +2,7 @@ from Minitree_H4l import Minitree_H4l
 from pdb import set_trace
 
 class WeightInfo:
- luminosity = 36.1
+ luminosity = 1 # Normalized to 36.1 pb-1 
  category_map = {
  "0jet":0,
  "1jet_highpt4l":1,

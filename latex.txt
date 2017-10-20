@@ -1,0 +1,125 @@
+\begin{center}
+\begin{tabular}{ c c c}
+\hline
+& $H\rightarrow 4l$ channel&  \\\hline
+& $\sqrt{s} = 13 $\,TeV &luminosity = 36.1\,pb$^{-1}$\\
+Parameter & \textbf{lepton\_eta[0]} & \textbf{jet\_eta[0]}\\\hline
+Process & Count & Count\\\hline
+data driven bkg&147&66\\
+redu\_ttW&3&3\\
+redu\_ttZ&589&564\\
+redu\_bbH&19&7\\
+redu\_ZZZ&33&16\\
+redu\_WZZ&56&37\\
+redu\_WWZ&69&41\\
+gg\_ZZ&4511&2096\\
+ZZllll&36760&13205\\\hline
+Total background&42188&16034\\
+VBF&203&152\\
+ggH&2272&956\\\hline
+Total event&44663&17143\\
+Observed data&50829&17220\\\hline
+\end{tabular}
+\captionof{table}{Observed and expected number of events for the $H\rightarrow 4l$ channel for the parameter lepton\_eta[0] and jet\_eta[0]}
+\end{center}
+
+\begin{center}
+\begin{tabular}{ c c c}
+\hline
+& $H\rightarrow 4l$ channel&  \\\hline
+& $\sqrt{s} = 13 $\,TeV &luminosity = 36.1\,pb$^{-1}$\\
+Parameter & \textbf{lepton\_phi[0]} & \textbf{jet\_phi[0]}\\\hline
+Process & Count & Count\\\hline
+data driven bkg&147&66\\
+redu\_ttW&3&3\\
+redu\_ttZ&589&575\\
+redu\_bbH&19&8\\
+redu\_ZZZ&33&17\\
+redu\_WZZ&56&39\\
+redu\_WWZ&69&44\\
+gg\_ZZ&4509&2405\\
+ZZllll&36742&14328\\\hline
+Total background&42168&17485\\
+VBF&203&179\\
+ggH&2271&1076\\\hline
+Total event&44642&18741\\
+Observed data&50829&19061\\\hline
+\end{tabular}
+\captionof{table}{Observed and expected number of events for the $H\rightarrow 4l$ channel for the parameter lepton\_phi[0] and jet\_phi[0]}
+\end{center}
+
+\begin{center}
+\begin{tabular}{ c c c}
+\hline
+& $H\rightarrow 4l$ channel&  \\\hline
+& $\sqrt{s} = 13 $\,TeV &luminosity = 36.1\,pb$^{-1}$\\
+Parameter & \textbf{phi} & \textbf{phi1}\\\hline
+Process & Count & Count\\\hline
+data driven bkg&147&147\\
+redu\_ttW&3&3\\
+redu\_ttZ&589&589\\
+redu\_bbH&19&19\\
+redu\_ZZZ&33&33\\
+redu\_WZZ&56&56\\
+redu\_WWZ&69&69\\
+gg\_ZZ&4509&4509\\
+ZZllll&36743&36746\\\hline
+Total background&42168&42172\\
+VBF&203&203\\
+ggH&2271&2271\\\hline
+Total event&44642&44646\\
+Observed data&50793&50793\\\hline
+\end{tabular}
+\captionof{table}{Observed and expected number of events for the $H\rightarrow 4l$ channel for the parameter phi and phi1}
+\end{center}
+
+\begin{center}
+\begin{tabular}{ c c c}
+\hline
+& $H\rightarrow 4l$ channel&  \\\hline
+& $\sqrt{s} = 13 $\,TeV &luminosity = 36.1\,pb$^{-1}$\\
+Parameter & \textbf{lepton\_pt[0]} & \textbf{jet\_pt[0]}\\\hline
+Process & Count & Count\\\hline
+data driven bkg&147&66\\
+redu\_ttW&3&3\\
+redu\_ttZ&588&570\\
+redu\_bbH&19&8\\
+redu\_ZZZ&33&17\\
+redu\_WZZ&56&37\\
+redu\_WWZ&69&41\\
+gg\_ZZ&4508&2403\\
+ZZllll&36742&14220\\\hline
+Total background&42165&17365\\
+VBF&203&179\\
+ggH&2272&1072\\\hline
+Total event&44640&18616\\
+Observed data&50829&18772\\\hline
+\end{tabular}
+\captionof{table}{Observed and expected number of events for the $H\rightarrow 4l$ channel for the parameter lepton\_pt[0] and jet\_pt[0]}
+\end{center}
+
+\begin{center}
+\begin{tabular}{ c c c}
+\hline
+& $H\rightarrow 4l$ channel&  \\\hline
+& $\sqrt{s} = 13 $\,TeV &luminosity = 36.1\,pb$^{-1}$\\
+Parameter & \textbf{pt4l\_fsr} & \textbf{m4l\_fsr}\\\hline
+Process & Count & Count\\\hline
+data driven bkg&147&147\\
+redu\_ttW&3&3\\
+redu\_ttZ&584&444\\
+redu\_bbH&19&19\\
+redu\_ZZZ&32&20\\
+redu\_WZZ&55&31\\
+redu\_WWZ&68&45\\
+gg\_ZZ&4505&3705\\
+ZZllll&36678&29558\\\hline
+Total background&42091&33973\\
+VBF&202&203\\
+ggH&2268&2272\\\hline
+Total event&44561&36448\\
+Observed data&50721&41335\\\hline
+\end{tabular}
+\captionof{table}{Observed and expected number of events for the $H\rightarrow 4l$ channel for the parameter pt4l\_fsr and m4l\_fsr}
+\end{center}
+

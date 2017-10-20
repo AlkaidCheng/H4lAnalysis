@@ -113,7 +113,7 @@ class PlotClass(SimpleSelection,WeightInfo):
  def __init__(self, file,tree):
   SimpleSelection.__init__(self,file,tree)
   
- def plot_1D_weighted(self ,param, weight,nbin,xmin,xmax,title = "", category = None, reweight_type = None): 
+ def plot_1D_weighted(self ,param, weight,nbin,xmin,xmax,title = "", lumiscale = 1., category = None, reweight_type = None): 
   kwargs = ""
   if param in self.optimised_binning:
    h_dict = {i:ROOT.TH1D("{0}_{1}".format(param,i),"{0}_{1}".format(title,i),len(self.optimised_binning[param])-1,self.optimised_binning[param]) for i in self.category_map.keys()} #This require python 2.7 or above
@@ -131,7 +131,7 @@ class PlotClass(SimpleSelection,WeightInfo):
    if (category is None) or ((category is not None) and ((Prod_Type in category) or Prod_Type_pt in category)):  #Filter unwanted category
     h_dict[Prod_Type_pt].Fill(eval(param_new),eval(weight_new))  #Do the weighting 
   for category in h_dict:
-   h_dict[category].Scale(self.luminosity)
+   h_dict[category].Scale(self.luminosity*lumiscale)
    if reweight_type is not None:
     h_dict[category].Scale(self.reweight_factor[reweight_type][self.category_map[category]])
   return merge(h_dict),h_dict  #Return both combined distribution and distribution by category

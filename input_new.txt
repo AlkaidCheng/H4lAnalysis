@@ -18,3 +18,4 @@ mc15_13TeV.343247.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0p.root
 mc15_13TeV.344135.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0p.root
 mc15_13TeV.343212.Powheggg2vvPythia8EvtGen_gg_ZZ_bkg_2e2mu_13TeV.root
 mc15_13TeV.343213.Powheggg2vvPythia8EvtGen_gg_ZZ_bkg_4l_noTau_13TeV.root
+data_13TeV.root

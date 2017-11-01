@@ -1,29 +1,51 @@
 import ROOT
-from Minitree_H4l import Minitree_H4l
-from Selection import SimpleSelection
-from Selection import WeightInfo
+from H4lAnalysis import Minitree_H4l
+from collections import namedtuple
+from os.path import join
+from os import system
+import math
+import re
 from pdb import set_trace
 
 class ColorWheel:
- bkg = ["42","39","46","606","862","8","9","30","49","9"]
- sgn = ["4","2","3","6"]
+ color = {
+ "bkg" : ["42","39","46","606","862","8","9","30","49","9"],
+ "sgn" : ["4","2","3","6"],
+ "def" : ["4","2","3","6","7","5","28","39","46","606","862"],
+ "kH"  : ["4","2","5"],
+ "kA"  : ["6","3","7"],
+ "sm": ["1"],
+ "datadriven": ["15"],
+ "dat": ["1"]}
  def __init__(self):
-  self.sgn_index = -1
-  self.bkg_index = -1
- def next_sgn(self):
-  self.sgn_index = (self.sgn_index + 1) % len(self.sgn)
-  return self.sgn[self.sgn_index]
- def next_bkg(self):
-  self.bkg_index = (self.bkg_index + 1) % len(self.bkg)
-  return self.bkg[self.bkg_index]
+  self.index = {}
+  for key in self.color:
+   self.index[key] = -1
+ def next(self,proc_type):
+  self.index[proc_type] = (self.index[proc_type] + 1) % len(self.color[proc_type])
+  return self.color[proc_type][self.index[proc_type]]
 
 
-style = {
- "bkg":"LineColor=1,LineWidth=1,FillColor=Fill_Color",
- "sgn":"LineColor=Line_Color,LineWidth=1,LineStyle=2,FillColor=0",
- "Uncertainty":"FillStyle=3244,FillColor=16",
- "data_driven":"LineColor=1,LineWidth=1,FillColor=12",
+Kinematics_Plot_Style = {
+ "bkg":"LineColor=1,LineWidth=1,FillColor=ColorWheel",
+ "sgn":"LineColor=ColorWheel,LineWidth=1,LineStyle=2,FillColor=0",
+ "def":"LineColor=ColorWheel,LineWidth=1,LineStyle=2,FillColor=0",
+ "kH":"LineColor=ColorWheel,LineWidth=1,LineStyle=3,FillColor=0",
+ "kA":"LineColor=ColorWheel,LineWidth=1,LineStyle=7,FillColor=0",
+ "sm":"LineColor=ColorWheel,LineWidth=2,LineStyle=1",
+ "uncertainty":"FillStyle=3244,FillColor=16",
+ "datadriven":"LineColor=1,LineWidth=1,FillColor=12",
  "dat":"MarkerStyle=8,LineColor=1,LineWidth=1"}
+ 
+Kinematics_Legend_Style = {
+ "bkg" : "f",
+ "sgn" : "f",
+ "datadriven": "f",
+ "sm":"f",
+ "kA":"f",
+ "kH":"f",
+ "def": "f",
+ "dat" : "l"}
 
 def Set(obj, **kwargs):
  for key, value in kwargs.iteritems():
@@ -35,9 +57,107 @@ def Set(obj, **kwargs):
    getattr(obj, 'Set' + key)(value)
 
 def GraphSet(obj, style):
- settings = {x.split('=')[0]: eval(x.split('=')[1]) for x in style.split(',')}
- Set(obj, **settings)
+ if ("=" in style):
+  settings = {x.split('=')[0]: eval(x.split('=')[1]) for x in style.split(',')}
+  Set(obj, **settings)
+ 
+def LegendIni(style = "default",ncol = 1):
+ leg = ROOT.TLegend(0.9-0.25*ncol,0.9 ,0.9,0.9)
+ leg.SetTextFont(62)
+ leg.SetTextSize(0.02)
+ leg.SetNColumns(ncol)
+ return leg
+  
+def LegendResize(leg,height = 0.03):
+ leg.SetY1(leg.GetY1() - leg.GetNRows()*0.03)
+ return leg
 
+
+def SaveSummary(h,output):
+ f = open(output,"w")
+ if isinstance(h,dict):
+  for key in h:
+   f.write("{0}\t{1}\n".format(key,h[key].Integral()))
+ f.close()
+
+def stacked_kinematics_plot(h,xtitle = "", ytitle = "",canvasstyle = None, style = None, drawstyle = None,nostat = True, normalize = None,ymargin = 0.,save = True,output = "result.pdf"):
+
+ c = ROOT.TCanvas()
+ c.cd()
+ hs = ROOT.THStack("hs","")
+ leg = LegendIni(ncol = int(math.ceil(len(h)/6.)))
+ color = ColorWheel()
+ h_data = None
+ if normalize == "OVERALL":
+  sum = 0
+  for category in h:
+   sum+=h[category].Integral()
+  for category in h:
+   h[category].Scale(1/abs(sum))
+ elif normalize == "INDIVIDUAL":
+  for category in h:
+   h[category].Scale(1/h[category].Integral())
+ for category in h:
+  proc_type = "def"
+  for proc in Minitree_H4l.proc_type:
+   if category in Minitree_H4l.proc_type[proc]:
+    proc_type = proc
+  GraphSet(h[category],Kinematics_Plot_Style[proc_type].replace("ColorWheel",color.next(proc_type)))
+  leg.AddEntry(h[category],category,Kinematics_Legend_Style[proc_type])
+  if proc_type == "dat":
+   h_data = h[category]
+   continue  
+  hs.Add(h[category])
+ leg = LegendResize(leg)
+ if canvasstyle is not None:
+  GraphSet(c,canvasstyle)
+ if style is not None:
+  GraphSet(hs,style)
+
+ if nostat and hasattr(hs,'SetStats'):
+  hs.SetStats(0)
+ hs.Draw("HIST" if drawstyle is None else drawstyle+" HIST")
+ hs.GetXaxis().SetTitle(xtitle)
+ hs.GetYaxis().SetTitle(ytitle)
+ hs.GetYaxis().SetTitleOffset(1.4)
+ if drawstyle == "NOSTACK":
+  maximum = 0
+  for category in h:
+   if h[category].GetMaximum() > maximum:
+    maximum = h[category].GetMaximum()
+  hs.SetMaximum(maximum*(1+ymargin))
+ else:
+  hs.SetMaximum(hs.GetMaximum()*(1+ymargin))
+
+ leg.Draw()
+ if h_data is not None:
+  h_data.Draw("SAME")
+  hs.SetMaximum(h_data.GetMaximum()*(1+ymargin))
+ if save:
+  c.SaveAs(output)
+  
+
+
+def kinematics_plot(h,xtitle = "", ytitle = "",canvasstyle = None,style = None, drawstyle = None,nostat = True, normalize = False,ymargin = 0.,save = True,output = "result.pdf"):
+ c = ROOT.TCanvas()
+ c.cd()
+ if canvasstyle is not None:
+  GraphSet(c,style)
+ if style is not None:
+  GraphSet(h,style)
+ if canvasstyle is not None:
+  GraphSet(c,canvasstyle)
+ if normalize:
+  h.Scale(1/abs(h.Integral()))
+ if nostat and hasattr(h,'SetStats'):
+  h.SetStats(0)
+ h.Draw("" if drawstyle is None else drawstyle)
+ h.GetXaxis().SetTitle(xtitle)
+ h.GetYaxis().SetTitle(ytitle)
+ h.GetYaxis().SetTitleOffset(1.4)
+ h.SetMaximum(h.GetMaximum()*(1+ymargin))
+ if save:
+  c.SaveAs(output)
 
 def format_plot(h, title = None, xtitle = "", ytitle = "", style = "HIST", nostat = True, normalize = False, logy = False, save = True, legend = None, output = "result.pdf",h_same = None, ymargin = 0.):
  c = ROOT.TCanvas()
@@ -75,9 +195,17 @@ def merge(h):
    result = next(h_iter).Clone()
    for i in h_iter:
     result.Add(i)    
-
  else:
   print "ERROR: merging histograms with different binnings"
+ return result
+      
+def merge_two_hist_by_keys(h1,h2):
+ if (set(h1.keys()) == set(h2.keys())):
+  for h in h1:
+   h1[h].Add(h2[h])
+  return h1
+ else:
+  raise Exception("Combining Dictionary of Histograms with Different Keys")
  return result
 
 def cmp_binning(h):
@@ -107,47 +235,3 @@ def redrawBorder():
  #this little macro redraws the axis tick marks and the pad border lines.
  ROOT.gPad.Update()
  ROOT.gPad.RedrawAxis()
-
-class PlotClass(SimpleSelection,WeightInfo):
-
- def __init__(self, file,tree):
-  SimpleSelection.__init__(self,file,tree)
-  
- def plot_1D_weighted(self ,param, weight,nbin,xmin,xmax,title = "", lumiscale = 1., category = None, reweight_type = None): 
-  kwargs = ""
-  if param in self.optimised_binning:
-   h_dict = {i:ROOT.TH1D("{0}_{1}".format(param,i),"{0}_{1}".format(title,i),len(self.optimised_binning[param])-1,self.optimised_binning[param]) for i in self.category_map.keys()} #This require python 2.7 or above
-   h = ROOT.TH1D(param,title,len(self.optimised_binning[param])-1,self.optimised_binning[param])
-  else:
-   h_dict = {i:ROOT.TH1D("{0}_{1}".format(param,i),"{0}_{1}".format(title,i),nbin,xmin,xmax) for i in self.category_map.keys()} #This require python 2.7 or above
-   h = ROOT.TH1D(param,title,nbin,xmin,xmax)
-
-  param_new = "self.t.{0}".format(param)
-  weight_new = "self.t.{0}".format(weight)
-  for i in range(self.NEntries):
-   self.t.GetEntry(i)
-   Prod_Type = self.GetProd_Type()
-   Prod_Type_pt = self.GetProd_Type_pt(Prod_Type)    #Obtain the category of the event, i.e. Prod_Type_pt == category
-   if (category is None) or ((category is not None) and ((Prod_Type in category) or Prod_Type_pt in category)):  #Filter unwanted category
-    h_dict[Prod_Type_pt].Fill(eval(param_new),eval(weight_new))  #Do the weighting 
-  for category in h_dict:
-   h_dict[category].Scale(self.luminosity*lumiscale)
-   if reweight_type is not None:
-    h_dict[category].Scale(self.reweight_factor[reweight_type][self.category_map[category]])
-  return merge(h_dict),h_dict  #Return both combined distribution and distribution by category
-
- @staticmethod
- def data_driven_dist(h):
-  for param in h:
-   for category in h[param]:
-     h[param][category] = merge(h[param][category])
-     normalization = h[param][category].Integral()
-     DatDri_cnt = PlotClass.Data_Driven_Count[category]*PlotClass.luminosity
-     if normalization != 0:
-      for i in range(1,h[param][category].GetNbinsX()+1):
-       cnt = h[param][category].GetBinContent(i)
-       h[param][category].SetBinContent(i,DatDri_cnt*(cnt/normalization))
-     else:
-      print "No data driven event for category: {0}".format(category)
-   h[param] = merge(h[param])
-  return h 

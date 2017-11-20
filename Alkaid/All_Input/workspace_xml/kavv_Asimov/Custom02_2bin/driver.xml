@@ -1,0 +1,20 @@
+<!DOCTYPE Combination  SYSTEM "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/input_xml/HistFactorySchema.dtd">
+
+<Combination OutputFilePrefix="/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace/kavv_Asimov//Custom02_2bin/output" >
+
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_0jet.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_1jet_highpt4l.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_1jet_mediumpt4l.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_1jet_lowpt4l.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_2jet_VBF_highptjet.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_2jet_VH_highpt4l.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_2jet_VBF_lowptjet.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_2jet_VH_lowpt4l.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_VHlep.xml</Input>
+  <Input>/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid/All_Input/workspace_xml/kavv_Asimov//Custom02_2bin/category_ttH.xml</Input>
+
+  <Measurement Name="datastat" Lumi="1" LumiRelErr="0.0001" ExportOnly="True">
+    <POI>mu_vbf mu_ggh mu_vh</POI>
+  </Measurement>
+
+</Combination>

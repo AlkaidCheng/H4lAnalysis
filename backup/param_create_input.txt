@@ -1,0 +1,25 @@
+####################################################################################################################
+####################################################################################################################
+##ALL parameter name should begin with a character; Combination of parameters can be used. E.g. (phi+phi1)/2
+##Available SETTINGS: REWEIGHT DATADRIVEN OBS STACK SUMMARY NOMERGE BYCATEGORY SAVEROOT
+##NOMERGE: DO NOT MERGE DIFFERENT MINITREES OF THE SAME PROCESS
+##BYCATEGORY: SAVE THE RESULTS BY CATEGORY
+##SUMMARY: SAVE SUMMARY STATISTICS IN TEXT FILE
+##SAVEROOT: SAVE A ROOT FILE FOR EACH HISTOGRAM CREATED
+####################################################################################################################
+####################################################################################################################
+#include SETTING = REWEIGHT  NOMERGE  ORDERED  BYCATEGORY SAVEROOT
+#include LUMISCALE = 1
+#include WEIGHT = weight_couplings
+#include OUTPUTNAME = output_PARAM_PROCESS
+#include OUTPUTNAME_BYCATEGORY = CATEGORY/output_category_CATEGORY_PROCESS_nominal
+#include OUTPUTNAME_STACK = output_PARAM_MINITREES_stack
+#include OUTPUTNAME_STACK_BYCATEGORY = output_PARAM_MINITREES_CATEGORY_stack
+#include SUMMARYNAME = output_PARAM_statistics
+#include SUMMARYNAME_BYCATEGORY = output_PARAM_CATEGORY_statistics
+#include KEYS = NAME  NBIN  MIN  MAX  MINITREES  CATEGORY  STYLE DRAWSTYLE  CANVASSTYLE  NORMALIZATION
+BDT_discriminant  1  -1  1  ALL  0jet  None  None  None  None
+BDT_OneJet_jptetadR_discriminant  1  -1  1  ALL  1jet  None  None  None  None
+BDT_TwoJet_discriminant  1  -1  1  ALL  2jet_VBF  None  None  None  None
+BDT_VH_noptHjj_discriminant  1  -1  1  ALL  2jet_VH  None  None  None  None
+m4l_constrained_HM  1  110  145  ALL  VHlep,ttH  None  None  None  None

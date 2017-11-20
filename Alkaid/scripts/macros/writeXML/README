@@ -1,0 +1,5 @@
+Author: Valerio Bortolotto
+Transcribed by: Alkaid Cheng
+
+Usage:
+$ writeXML(ErrorType = "EXP STAT THEO", sample_in = "samples_SM.txt", category_in = "category.txt", norm_in = "norm_factor_EFT.txt", syst_in = "systematics.txt", TString jetptcut = "35");

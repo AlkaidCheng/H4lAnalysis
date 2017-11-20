@@ -1,0 +1,49 @@
+<!DOCTYPE Channel SYSTEM '/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_xml/HistFactorySchema.dtd'>
+
+<Channel Name="c_1jet_lowpt4l" HistoName="">
+  <Data  InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_data_run_2_obs_nominal.root" HistoName="data_run_2_obs_Custom01_1bin" HistoPath = ""/>
+ <StatErrorConfig RelErrorThreshold= "0." ConstraintType="Poisson" />
+
+  <Sample Name="ZZllll" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_ZZllll_nominal.root" HistoPath="" HistoName="ZZllll_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="vbfMG5_0p" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_vbfMG5_0p_nominal.root" HistoPath="" HistoName="vbfMG5_0p_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_vbf_BSM0" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+  <Sample Name="vbfMG5_0phkHv10" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_vbfMG5_0phkHv10_nominal.root" HistoPath="" HistoName="vbfMG5_0phkHv10_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_vbf_BSM1" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+  <Sample Name="vbfMG5_0pphkHv5" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_vbfMG5_0pphkHv5_nominal.root" HistoPath="" HistoName="vbfMG5_0pphkHv5_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_vbf_BSM2" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+  <Sample Name="vbfMG5_0pphkHvm5" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_vbfMG5_0pphkHvm5_nominal.root" HistoPath="" HistoName="vbfMG5_0pphkHvm5_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_vbf_BSM3" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+  <Sample Name="vbfMG5_0pphkHv2p5" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_vbfMG5_0pphkHv2p5_nominal.root" HistoPath="" HistoName="vbfMG5_0pphkHv2p5_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_vbf_BSM4" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+  <Sample Name="Redu_Bkg" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_Redu_Bkg_nominal.root" HistoPath="" HistoName="Redu_Bkg_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="MC_REDU_BKG" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_MC_REDU_BKG_nominal.root" HistoPath="" HistoName="MC_REDU_BKG_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="bbH_SUM" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/1jet_lowpt4l/output_category_1jet_lowpt4l_bbH_SUM_nominal.root" HistoPath="" HistoName="bbH_SUM_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_tth_norm" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+</Channel>

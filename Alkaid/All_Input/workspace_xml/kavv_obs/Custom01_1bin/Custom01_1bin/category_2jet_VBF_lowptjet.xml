@@ -1,0 +1,8 @@
+<!DOCTYPE Channel SYSTEM '/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_xml/HistFactorySchema.dtd'>
+
+<Channel Name="c_2jet_VBF_lowptjet" HistoName="">
+  <Data  InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/2jet_VBF_lowptjet/output_category_2jet_VBF_lowptjet_data_run_2_obs_nominal.root" HistoName="data_run_2_obs_Custom01_1bin" HistoPath = ""/>
+ <StatErrorConfig RelErrorThreshold= "0." ConstraintType="Poisson" />
+
+  <Sample Name="ZZllll" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom01_1bin/2jet_VBF_lowptjet/output_category_2jet_VBF_lowptjet_ZZllll_nominal.root" HistoPath="" HistoName="ZZllll_Custom01_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 

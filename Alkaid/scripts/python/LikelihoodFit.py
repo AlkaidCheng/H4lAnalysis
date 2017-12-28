@@ -17,7 +17,7 @@ parser.add_argument(
 parser.add_argument(
     '--outpath','-o', default = "../../output/")
 parser.add_argument(
-    '--discriminant', default = "BDT_1bin")      
+    '--discriminant', default = "BDT_1bin")       
     
 args = parser.parse_args()
 
@@ -31,10 +31,14 @@ base_path = "../../All_Input/input_LLFit/"
 
 Utilities.try_makedir(args.outpath + args.discriminant)
 if args.couplingtype == "khvv":
- l = ROOT.LikelihoodFitting_1D( base_path + 'systematics_fake.txt', base_path + 'coupling_name_khvv.txt', base_path + 'function_khvv.txt', base_path + 'function_ggf_SM_1_p6_1_m6.txt', join(args.wspath,"output_combined_datastat_model.root"),  "combined", "ModelConfig", "obsData", args.smfix, True, 5, 3, True, args.Asimov)
+ l = ROOT.LikelihoodFitting_1D( base_path + 'systematics_fake.txt', base_path + 'coupling_name_khvv.txt', base_path + 'function_khvv.txt', base_path + 'function_ggf_SM_1_p6_1_m6.txt', join(args.wspath,"output_combined_datastat_model.root"),  "combined", "ModelConfig", "obsData", args.smfix, True, 5, 3, True, args.Asimov, False, "vv")
  l.DoScan(120,0.1, -6.,120, 0.1,-8., join(args.outpath,args.discriminant))
  del l
 elif args.couplingtype == "kavv":
- l = ROOT.LikelihoodFitting_1D( base_path + 'systematics_fake.txt', base_path + 'coupling_name_kavv.txt', base_path + 'function_kavv.txt', base_path + 'function_ggf_SM_1_p6_1_m6.txt', join(args.wspath,"output_combined_datastat_model.root"),  "combined", "ModelConfig", "obsData", args.smfix, True, 5, 3, True, args.Asimov)
+ l = ROOT.LikelihoodFitting_1D( base_path + 'systematics_fake.txt', base_path + 'coupling_name_kavv.txt', base_path + 'function_kavv.txt', base_path + 'function_ggf_SM_1_p6_1_m6.txt', join(args.wspath,"output_combined_datastat_model.root"),  "combined", "ModelConfig", "obsData", args.smfix, True, 5, 3, True, args.Asimov, False, "vv")
  l.DoScan(120,0.1, -6.,120, 0.1,-8., join(args.outpath,args.discriminant))
+ del l
+elif args.couplingtype == "kagg":
+ l = ROOT.LikelihoodFitting_1D( base_path + 'systematics_fake.txt', base_path + 'coupling_name_kagg.txt', base_path + 'function_for_kagg_only_ggf.txt', '', join(args.wspath,"output_combined_datastat_model.root"),  "combined", "ModelConfig", "obsData", args.smfix, False, 3, 3, True, args.Asimov, False, "ggf")
+ l.DoScan(320,0.005, -0.8,320, 0.005,-0.8, join(args.outpath,args.discriminant))
  del l

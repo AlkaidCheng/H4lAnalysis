@@ -72,10 +72,10 @@ for param in Work["PARAM"]:
   if "SUMMARY" in Work["SETTING"]:
    PlotUtil.SaveSummary(histograms,join(outdir,"{0}.txt".format(Work["SUMMARYNAME"].replace("PARAM",param["NAME"]))))
   if "STACK" in Work["SETTING"]:
-   PlotUtil.stacked_kinematics_plot(histograms, xtitle = param["NAME"],ytitle = "Event", canvasstyle = param["CANVASSTYLE"],normalize = param["NORMALIZATION"],style = param["STYLE"], drawstyle = param["DRAWSTYLE"],output = join(outdir,"{0}.pdf".format(Work["OUTPUTNAME_STACK"].replace("PARAM",param["NAME"]).replace("MINITREES",param["MINITREES"].replace(",","-")))), ymargin = 0.35, saveROOT = ("SAVEROOT" in Work["SETTING"]))
+   PlotUtil.stacked_kinematics_plot(histograms, xtitle = param["NAME"],ytitle = "Event", canvasstyle = param["CANVASSTYLE"],normalize = param["NORMALIZATION"],style = param["STYLE"], drawstyle = param["DRAWSTYLE"],output = join(outdir,"{0}.png".format(Work["OUTPUTNAME_STACK"].replace("PARAM",param["NAME"]).replace("MINITREES",param["MINITREES"].replace(",","-")))), ymargin = param["YMARGIN"], saveROOT = ("SAVEROOT" in Work["SETTING"]), ratio = "RATIO" in Work["SETTING"])
   else:
    for h in histograms:
-    PlotUtil.kinematics_plot(histograms[h],xtitle = param["NAME"],ytitle = "Event", canvasstyle = param["CANVASSTYLE"],normalize = param["NORMALIZATION"],style = param["STYLE"], drawstyle = param["DRAWSTYLE"],output = join(outdir,"{0}.pdf".format(Work["OUTPUTNAME"].replace("PARAM",param["NAME"]).replace("PROCESS",h))), ymargin = 0.35, saveROOT = ("SAVEROOT" in Work["SETTING"]))
+    PlotUtil.kinematics_plot(histograms[h],xtitle = param["NAME"],ytitle = "Event", canvasstyle = param["CANVASSTYLE"],normalize = param["NORMALIZATION"],style = param["STYLE"], drawstyle = param["DRAWSTYLE"],output = join(outdir,"{0}.pdf".format(Work["OUTPUTNAME"].replace("PARAM",param["NAME"]).replace("PROCESS",h))), ymargin =  param["YMARGIN"], saveROOT = ("SAVEROOT" in Work["SETTING"]))
  else:
   histograms_by_category = {}
   for h in histograms:
@@ -87,7 +87,7 @@ for param in Work["PARAM"]:
    if "SUMMARY" in Work["SETTING"]:
     PlotUtil.SaveSummary(histograms_by_category[category],join(outdir,"{0}.txt".format(Work["SUMMARYNAME_BYCATEGORY"].replace("PARAM",param["NAME"]).replace("CATEGORY",category))))
    if "STACK" in Work["SETTING"]:
-    PlotUtil.stacked_kinematics_plot(histograms_by_category[category], xtitle = param["NAME"],ytitle = "Event", canvasstyle = param["CANVASSTYLE"],normalize = param["NORMALIZATION"],style = param["STYLE"], drawstyle = param["DRAWSTYLE"],output = join(outdir,"{0}.pdf".format(Work["OUTPUTNAME_STACK_BYCATEGORY"].replace("PARAM",param["NAME"]).replace("MINITREES",param["MINITREES"].replace(",","-")))), ymargin = 0.35, saveROOT = ("SAVEROOT" in Work["SETTING"]))
+    PlotUtil.stacked_kinematics_plot(histograms_by_category[category], xtitle = param["NAME"],ytitle = "Event", canvasstyle = param["CANVASSTYLE"],normalize = param["NORMALIZATION"],style = param["STYLE"], drawstyle = param["DRAWSTYLE"],output = join(outdir,"{0}.pdf".format(Work["OUTPUTNAME_STACK_BYCATEGORY"].replace("PARAM",param["NAME"]).replace("MINITREES",param["MINITREES"].replace(",","-")))), ymargin =  param["YMARGIN"], saveROOT = ("SAVEROOT" in Work["SETTING"]))
    else:
     for h in histograms_by_category[category]:
-     PlotUtil.kinematics_plot(histograms_by_category[category][h],title = Work["HISTTITLE"].replace("PROCESS",h).replace("PARAM",param["NAME"]),xtitle = param["NAME"],ytitle = "Event", canvasstyle = param["CANVASSTYLE"],normalize = param["NORMALIZATION"],style = param["STYLE"], drawstyle = param["DRAWSTYLE"],output = join(outdir,"{0}.pdf".format(Work["OUTPUTNAME_BYCATEGORY"].replace("PARAM",param["NAME"]).replace("PROCESS",h).replace("CATEGORY",category))), ymargin = 0.35, saveROOT = ("SAVEROOT" in Work["SETTING"]))
+     PlotUtil.kinematics_plot(histograms_by_category[category][h],title = Work["HISTTITLE"].replace("PROCESS",h).replace("PARAM",param["NAME"]),xtitle = param["NAME"],ytitle = "Event", canvasstyle = param["CANVASSTYLE"],normalize = param["NORMALIZATION"],style = param["STYLE"], drawstyle = param["DRAWSTYLE"],output = join(outdir,"{0}.pdf".format(Work["OUTPUTNAME_BYCATEGORY"].replace("PARAM",param["NAME"]).replace("PROCESS",h).replace("CATEGORY",category))), ymargin =  param["YMARGIN"], saveROOT = ("SAVEROOT" in Work["SETTING"]))

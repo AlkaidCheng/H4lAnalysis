@@ -15,6 +15,8 @@ parser.add_argument(
     'dir', default = "../../All_Input/input_sample/", help="""Path to the input samples""")
 parser.add_argument(
     '--discriminant','-d', default = "BDT_1bin", help="""Name of the discriminant added to the histogram name""")
+parser.add_argument(
+    '--mode','-m', default = "vv", help="""Name of the discriminant added to the histogram name""")
 args = parser.parse_args()
 
 

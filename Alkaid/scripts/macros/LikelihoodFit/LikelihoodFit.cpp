@@ -11,7 +11,7 @@ void LikelihoodFitting::DoScan(const int &NumOfScanX, const double &widthX, cons
 
 
 //Constructor for Initializing all variables for the NLL scan
-LikelihoodFitting::LikelihoodFitting(const TString &SystErrInput, const TString &CouplingInput, const TString &ReadoutInput, const TString &ggfReadoutInput, const TString &wsInput, const TString &workspace, const TString &model, const TString &dataname, const bool &_SM_fix_, const bool & _total_width_fix_, const int &_NOB_, const int &_NOB_ggf_, const bool &_ggf_BR_modification_, const bool &_Asimov_ ) {
+LikelihoodFitting::LikelihoodFitting(const TString &SystErrInput, const TString &CouplingInput, const TString &ReadoutInput, const TString &ggfReadoutInput, const TString &wsInput, const TString &workspace, const TString &model, const TString &dataname, const bool &_SM_fix_, const bool & _total_width_fix_, const int &_NOB_, const int &_NOB_ggf_, const bool &_ggf_BR_modification_, const bool &_Asimov_, const bool &_total_mu_ggf_, const TString& _mode_) {
 	this->Tree_Scan = new TTree("Likelihood", "test statistic");
 	this->SM_fix = _SM_fix_;
 	this->total_width_fix = _total_width_fix_;
@@ -19,6 +19,8 @@ LikelihoodFitting::LikelihoodFitting(const TString &SystErrInput, const TString 
 	this->NOB_ggf = _NOB_ggf_;
 	this->ggf_BR_modification = _ggf_BR_modification_;
 	this->Asimov = _Asimov_;
+	this->total_mu_ggf = _total_mu_ggf_;
+	this->mode = _mode_;
 	ParamIni();
 	SetBranch();
 	SetSystBranch(SystErrInput);
@@ -33,6 +35,8 @@ LikelihoodFitting::~LikelihoodFitting() {
 	delete this->f;
 	delete this->ga;
 	delete this->gb;
+	if (this->mode == "ggf")
+		delete this->gggf;
 	delete this->normList;
 }
 
@@ -46,15 +50,19 @@ void LikelihoodFitting::DerivedClassVariablesIni(const TString &ReadoutInput, co
 	SetCouplBranch();
 	SetRealVar();
 	SetTotalWidthFunction();
-	SetFormula_Exctracted_For_ttH();
-	RooFormulaVar t_t_H_function("t_t_H_function_Valerio", "t_t_H_function_Valerio", this->Formula_Exctracted_For_ttH, *this->normList);
-	w->import(t_t_H_function);
-	SetFormula(ReadoutInput, this->NOB, this->TotalWidthFunction, "Valerio");
-	SetFormula(ggfReadoutInput, this->NOB_ggf, this->TotalWidthFunction, "Valerio_ggf");
+	if (this->mode == "ggf")
+		SetFormula(ReadoutInput, this->NOB, TString("").Format("@2*%s",this->TotalWidthFunction.Data()), "Valerio");
+	else if (this->mode == "vv") {
+		SetFormula_Exctracted_For_ttH();
+		RooFormulaVar t_t_H_function("t_t_H_function_Valerio", "t_t_H_function_Valerio", this->Formula_Exctracted_For_ttH, *this->normList);
+		w->import(t_t_H_function);
+		SetFormula(ReadoutInput, this->NOB, this->TotalWidthFunction, "Valerio");
+		SetFormula(ggfReadoutInput, this->NOB_ggf, this->TotalWidthFunction, "Valerio_ggf");
+	}
 	SetFactory();
-  LLVarIni();
-  TestCouplingIni();
-  DoScan_Uncon();
+	LLVarIni();
+	TestCouplingIni();
+	DoScan_Uncon();
 }
 
 void LikelihoodFitting::ParamIni() {
@@ -158,7 +166,15 @@ void LikelihoodFitting_1D::SetRealVar() {
 		this->gb = new RooRealVar(this->Couplings_Name[1], this->Couplings_Name[1], 0., -50., 50.);
 		this->ga->setConstant(true);
 		this->gb->setConstant(true);
-		this->normList = new RooArgList(*ga, *gb);
+   
+		if (this->mode == "ggf") {
+			this->gggf = new RooRealVar("total_mu_ggf", "total_mu_ggf", 1, -50, 50);
+			this->gggf->setConstant(!this->total_mu_ggf);
+		}
+		if (this->mode == "vv")
+			this->normList = new RooArgList(*ga, *gb);
+		else if (this->mode == "ggf")
+			this->normList = new RooArgList(*ga, *gb,*gggf);
 	}
 	else
 		std::cout << "ERROR: coupling names are not properly initialized. Cannot create RooRealVar ga and gb";
@@ -196,8 +212,12 @@ void LikelihoodFitting::SetNuisance(const TString &NuisSpec, std::vector < TStri
 }
 
 void LikelihoodFitting::SetMuNuisance() {
-	SetNuisance("*bf_", &this->mu_names, true, 1.);
-	SetNuisance("*gf_", &this->mu_names_ggf, true, 1.);
+	if (this->mode == "vv"){
+		SetNuisance("*bf_", &this->mu_names, true, 1.);
+	  SetNuisance("*gf_", &this->mu_names_ggf, true, 1.);
+  }
+  else if (this->mode == "ggf")
+    SetNuisance("*gf_", &this->mu_names, true, 1.);
 }
 
 
@@ -208,6 +228,8 @@ void LikelihoodFitting_1D::SetTotalWidthFunction() {
 		this->TotalWidthFunction = FitInfo::TotalWidthFunction_khvv;
 	else if (!this->Couplings_Name[1].CompareTo("kavv"))
 		this->TotalWidthFunction = FitInfo::TotalWidthFunction_kavv;
+	else if ((!this->Couplings_Name[1].CompareTo("kagg"))|| (!this->Couplings_Name[1].CompareTo("khgg")))
+		this->TotalWidthFunction = FitInfo::TotalWidthFunction_khgg_kagg;
 }
 
 void LikelihoodFitting_2D::SetTotalWidthFunction() {
@@ -281,21 +303,19 @@ void LikelihoodFitting::SetFactory() {
 	//w->factory(GetFactoryString(this->pdf->GetName(), { {this->mu_names, this->formula},{this->mu_names_ggf,this->formula_ggf}, { ScalarToVector(TString("mu_tth_norm")), ScalarToVector(TString("t_t_H_function_Valerio"))} }).Data());
 	std::vector< std::vector< std::vector<TString> > > input;
 	std::vector< std::vector<TString> > buffer;
-	buffer.push_back(ExtractVector(this->mu_names, 0));
-	buffer.push_back(ExtractVector(GetFormulaName("Valerio", this->mu_names.size()), 0));
+	buffer.push_back(this->mu_names);
+	buffer.push_back(GetFormulaName("Valerio", this->mu_names.size()));
 	input.push_back(buffer);
 	buffer.clear();
-	buffer.push_back(this->mu_names_ggf);
-	buffer.push_back(GetFormulaName("Valerio_ggf", this->mu_names_ggf.size()));
-	input.push_back(buffer);
-	buffer.clear();
-	buffer.push_back(ExtractVector(this->mu_names, 1, this->mu_names.size()));
-	buffer.push_back(ExtractVector(GetFormulaName("Valerio", this->mu_names.size()), 1, this->mu_names.size()));
-	input.push_back(buffer);
-	buffer.clear();
-	buffer.push_back(ScalarToVector(TString("mu_tth_norm")));
-	buffer.push_back(ScalarToVector(TString("t_t_H_function_Valerio")));
-	input.push_back(buffer);
+	if (this->mode == "vv") {
+		buffer.push_back(this->mu_names_ggf);
+		buffer.push_back(GetFormulaName("Valerio_ggf", this->mu_names_ggf.size()));
+		input.push_back(buffer);
+	  buffer.clear();
+		buffer.push_back(ScalarToVector(TString("mu_tth_norm")));
+		buffer.push_back(ScalarToVector(TString("t_t_H_function_Valerio")));
+		input.push_back(buffer);
+	}
 	std::cout << GetFactoryString(this->pdf->GetName(), input).Data() << std::endl;
 	w->factory(GetFactoryString(this->pdf->GetName(), input).Data());
 }
@@ -313,11 +333,13 @@ void LikelihoodFitting_2D::TestCouplingIni() {
 
 void LikelihoodFitting::LLVarIni() {
 	this->NewPDF = this->w->pdf(TString("").Format("%s_edit", this->pdf->GetName()).Data());
-	this->test_sm_weight = this->w->var("mu_vbf_BSM0");
-	this->test_bsm1_weight = this->w->var("mu_vbf_BSM1");
-	this->test_bsm2_weight = this->w->var("mu_vbf_BSM2");
-	this->test_bsm3_weight = this->w->var("mu_vbf_BSM3");
-	this->test_bsm4_weight = this->w->var("mu_vbf_BSM4");
+  if (this->mode == "vv"){
+	  this->test_sm_weight = this->w->var("mu_vbf_BSM0");
+	  this->test_bsm1_weight = this->w->var("mu_vbf_BSM1");
+	  this->test_bsm2_weight = this->w->var("mu_vbf_BSM2");
+	  this->test_bsm3_weight = this->w->var("mu_vbf_BSM3");
+	  this->test_bsm4_weight = this->w->var("mu_vbf_BSM4");
+   }
 }
 
 void LikelihoodFitting_1D::TestCouplingReset(double SM, double BSM_1, bool Fix_BSM_1, double BSM_2, bool Fix_BSM_2) {
@@ -386,24 +408,26 @@ void LikelihoodFitting_1D::DoScan(const int &NumOfScanX, const double &widthX, c
 
 		for (unsigned int j = 0; j < Systematics_Value.size(); j++)
 			Systematics_Value[i] = w->var("alpha_" + Systematics_Name[i])->getVal();
-
-		SM_weight = test_sm_weight->getVal();
-		BSM1_weight = test_bsm1_weight->getVal();
-		BSM2_weight = test_bsm2_weight->getVal();
-		BSM3_weight = test_bsm3_weight->getVal();
-		BSM4_weight = test_bsm4_weight->getVal();
-
+    
+    if (this->mode == "vv") {
+		  SM_weight = test_sm_weight->getVal();
+		  BSM1_weight = test_bsm1_weight->getVal();
+		  BSM2_weight = test_bsm2_weight->getVal();
+		  BSM3_weight = test_bsm3_weight->getVal();
+		  BSM4_weight = test_bsm4_weight->getVal();
+    }
 		this->Tree_Scan->Fill();
 	}
 
 	TString Modified[2] = { "NOT_modified","modified" };
   TString KSM[2] = { "KSM_floating","KSM_fix" };
   TString IsAsimov[2] = {"Observed","Asimov"};
-	TString fname = TString("").Format("ggf_BR_%s_scan_%s_total_width_%s_%s", Modified[this->ggf_BR_modification].Data(), this->Couplings_Name[1].Data(), Modified[this->total_width_fix].Data(),IsAsimov[this->Asimov].Data());
+  TString CouplingType = (this->mode == "vv") ? "KXvv": "KXgg";
+	TString fname = TString("").Format("ggf_BR_%s_scan_%s_total_width_%s_%s_%s", Modified[this->ggf_BR_modification].Data(), this->Couplings_Name[1].Data(), Modified[this->total_width_fix].Data(),IsAsimov[this->Asimov].Data(), CouplingType.Data());
 
 	TGraph * g_sign = new TGraph(NumOfScanX, coupling_value, Likelihood_scan);
-	g_sign->GetXaxis()->SetTitle(this->Couplings_Name[1] + "/" + this->Couplings_Name[0]);
-	g_sign->GetYaxis()->SetTitle("-2DLL");
+	g_sign->GetXaxis()->SetTitle(this->Couplings_Name[1].ReplaceAll("h","H").ReplaceAll("a","A").ReplaceAll("k","#kappa ") );
+	g_sign->GetYaxis()->SetTitle("-2ln(#lambda)");
   g_sign->Draw();
   c->SaveAs(Form("%s/%s_%s.pdf",OutputFilePrefix.Data(),KSM[this->SM_fix].Data(), fname.Data()));
 	g_sign->SaveAs(Form("%s/%s_%s.eps",OutputFilePrefix.Data(),KSM[this->SM_fix].Data(), fname.Data()));

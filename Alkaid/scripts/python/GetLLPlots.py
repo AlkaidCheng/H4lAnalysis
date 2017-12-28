@@ -26,12 +26,17 @@ for discrim in l:
  for asi,obs in f_in:
   if 'khvv' in asi:
    higgs = 'H'
+   coup = 'Hvv'
   elif 'kavv' in asi:
    higgs = 'A'
+   coup = 'Avv'
+  elif 'kagg' in asi:
+   higgs = 'A'
+   coup = 'Agg'
   if "fix" in asi:
    fix = "fix"
   else:
    fix = "floating"
   Utilities.try_makedir(join(args.outpath,discrim))
 
-  PlotUtil.LLScanPlot(join(args.path,discrim,asi),join(args.path,discrim,obs), "SM Expected", "Observed", xtitle = "#kappa_{"+higgs+"}", ytitle = "-2ln(#lambda)" , SMfix = ("fix" in asi), higgs = higgs,  output = join(args.outpath,discrim,"{0}_{1}.pdf".format(higgs,fix)))
+  PlotUtil.LLScanPlot(join(args.path,discrim,asi),join(args.path,discrim,obs), "SM Expected", "Observed", xtitle = "#kappa_{"+coup+"}", ytitle = "-2ln(#lambda)" , SMfix = ("fix" in asi), higgs = higgs,  output = join(args.outpath,discrim,"{0}_{1}.pdf".format(coup,fix)))

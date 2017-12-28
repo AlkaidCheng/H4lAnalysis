@@ -118,14 +118,18 @@ namespace H4l_XML {
 	};
 
 
-	std::vector<SamStruct> NormFactor_vector = SamStruct("VBFH125", Category("all", SysToWrite("mu_vbf", 20., 0., 1., true))) +
+	std::vector<SamStruct> NormFactor_vector_vv = SamStruct("VBFH125", Category("all", SysToWrite("mu_vbf", 20., 0., 1., true))) +
 		SamStruct("ggH125", Category("all", SysToWrite("mu_ggh", 90., 0., 1., true))) +
-		SamStruct("WH125", Category("all", SysToWrite("mu_vh", 90., 0., 1., true))) +
-		SamStruct("ZH125", Category("all", SysToWrite("mu_vh", 90., 0., 1., true))) +
+		SamStruct("WH125||ZH125", Category("all", SysToWrite("mu_vh", 90., 0., 1., true))) +
 		SamStruct("*bfMG5", Category("all", SysToWrite("mu_vbf_BASE_BSM", 90., 0., 1., true))) +
 		SamStruct("*gfMG", Category("~VHlep~ttH~2jet_VBF_highptjet", SysToWrite("mu_ggf_BASE_BSM", 90., 0., 1., true))) +
 		SamStruct("ttH||bbH_SUM", Category("all", SysToWrite("mu_tth_norm", 90., 0., 1., true))) +
 		SamStruct("ggfMG5_0p", Category("VHlep||ttH||2jet_VBF_highptjet", SysToWrite("mu_tth_norm", 90., 0., 1., true)));
+   
+	std::vector<SamStruct> NormFactor_vector_ggf = SamStruct("VBFH125", Category("all", SysToWrite("mu_vbf", 20., 0., 1., true))) +
+		SamStruct("ggH125", Category("all", SysToWrite("mu_ggh", 90., 0., 1., true))) +
+		SamStruct("WH125||ZH125", Category("all", SysToWrite("mu_vh", 90., 0., 1., true))) +
+		SamStruct("*gfMG", Category("all", SysToWrite("mu_ggf_BASE_BSM", 90., 0., 1., true)));   
 
 	std::vector<SamStruct> TheorySys_vector =
 		SamStruct("*bfMG5", Category("0jet", SysToWrite("ATLAS_UEPS_qqH", 0.9824, 1.0155) +
@@ -262,7 +266,7 @@ namespace H4l_XML {
 
 	TString SysMatch(TString sample, TString category, std::vector<SamStruct> vec, TString basename = "OverallSys Name");
                        //ErrorType = "EXP STAT THEO"
-	int writeXML(TString ErrorType = "", TString sample_in = XML_PATH + SAMPLE_IN, TString category_in = XML_PATH + CATEGORY_IN, TString norm_in = XML_PATH + NORM_IN, TString syst_in = XML_PATH + SYST_IN, TString jetptcut = "35",TString discriminant = DISCRIMINANT, TString outpath = OUT_PATH, const bool &IsAsimov = true);
+	int writeXML(TString ErrorType = "", TString sample_in = XML_PATH + SAMPLE_IN, TString category_in = XML_PATH + CATEGORY_IN, TString norm_in = XML_PATH + NORM_IN, TString syst_in = XML_PATH + SYST_IN, TString jetptcut = "35",TString discriminant = DISCRIMINANT, TString outpath = OUT_PATH, const bool &IsAsimov = true, TString mode = "vv");
   int writeDriver(TString dtd_in = DTD_PATH, TString workspace_out = WORKSPACE_PATH, TString category_in = XML_PATH + CATEGORY_IN, TString outpath = OUT_PATH, TString discriminant = DISCRIMINANT);
 
 }

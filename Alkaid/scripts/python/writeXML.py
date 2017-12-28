@@ -28,7 +28,9 @@ parser.add_argument(
 parser.add_argument(
     '--dtd', default = "../../All_Input/input_xml/HistFactorySchema.dtd")
 parser.add_argument(
-    '--wspath', default = "../../All_Input/workspace/")    
+    '--wspath', default = "../../All_Input/workspace/")
+parser.add_argument(
+    '--mode', default = "vv")        
     
 args = parser.parse_args()
 
@@ -39,6 +41,6 @@ gSystem.Load("../macros/writeXML/writeXML_cpp.so")
 Utilities.try_makedir(join(args.outpath,args.discriminant))
 Utilities.try_makedir(join(args.wspath,args.discriminant))
 #ROOT.H4l_XML.writeXML(ErrorType = "THEO SYS EXP", sample_in = XML_PATH + SAMPLE_IN, category_in = XML_PATH + CATEGORY_IN, norm_in = XML_PATH + NORM_IN, syst_in = XML_PATH + SYST_IN, jetptcut = "35", discriminant = "BDT", IsAsimov = true)
-ROOT.H4l_XML.writeXML(args.err, args.sample,args.category,args.norm,args.syst,args.jetptcut, args.discriminant, args.outpath, args.Asimov)
+ROOT.H4l_XML.writeXML(args.err, args.sample,args.category,args.norm,args.syst,args.jetptcut, args.discriminant, args.outpath, args.Asimov, args.mode)
 ROOT.H4l_XML.writeDriver(args.dtd, args.wspath , args.category, args.outpath, args.discriminant) 
 os.system("hist2workspace -standard_form {0}".format(join(args.outpath,args.discriminant,"driver.xml")))

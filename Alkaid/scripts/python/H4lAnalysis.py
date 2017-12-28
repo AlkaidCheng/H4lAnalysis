@@ -8,19 +8,33 @@ from Utilities import *
 import re
 
 class Minitree_H4l:
-
+ 
+ '''
  proc_type = {
- "sgn": set(["ggH","VBF","SM","ggH_BSM","ggH_Kaggm","ggH_Kagg","sgn","ttH","ggfMG5_0p","ggf",]),
+ "sgn": set(["ggH","VBF","SM","ggH_BSM","ggH_Kaggm","ggH_Kagg","sgn","ttH","ggfMG5_0p","ggf","VH"]),
  "sm":set(['ggH_SM','ggfMG5_0p','vbfMG5_0p_had','vh_0p_lep']),
  "kA":set(['ggfMG5_0phkAv1','ggfMG5_0phkAvm6','ggfMG5_0phkAv6',"vbfMG5_0pphmkAvm5_had",'vbfMG5_0pphmkAvm2p5_had','vbfMG5_0pphmkAv2p5_had','vbfMG5_0pphmkAv5_had','vh_0pphmkAvm5_lep','vh_0pphmkAvm2p5_lep','vh_0pphmkAv2p5_lep','vh_0pphmkAv5_lep']),
  "kH":set(['ggfMG5_0phkHv1','ggfMG5_0phkHvm6','ggfMG5_0phkHv6','vbfMG5_0pphkHvm5_had','vbfMG5_0pphkHvm2p5_had','vbfMG5_0pphkHv2p5_had','vbfMG5_0pphkHv5_had','vbf_0pphkHvm5_lep','vbf_0pphkHvm2p5_lep','vbf_0pphkHv2p5_lep','vbf_0pphkHv5_lep']),
  "bkg": set(["redu_bbH","redu_WWZ","redu_WZZ","redu_ZZZ","redu_ttZ","redu_ttW","ZZllll","gg_ZZ","bkg","redu"]),
  "datadriven": set(["data driven bkg","data driven"]),
  "dat": set(["data"])}
+ '''
+ #'''
+ proc_type = {
+ "sgn": set(["ggH","VBF","SM","ggH_BSM","ggH_Kaggm","ggH_Kagg","sgn","ttH","ggfMG5_0p","ggf","VH"]),
+ "sm":set(['ggF: KHgg 1 KAgg 0','VBF: KSM 1','VH: KSM 1']),
+ "kA":set(['ggF: KHgg 1 KAgg 0.5','ggF: KHgg 1 KAgg -0.5','ggfMG5_Khgg1_Kagg1p41','ggF: KHgg 1 KAgg 1','ggF: KSM 1 KAVV 1','ggF: KSM 1 KAVV -6','ggF: KSM 1 KAVV 6','VBF: KSM 0 KAVV 15','VBF: KSM 1 KAVV -5','VBF: KSM 1 KAVV 2.5','VBF: KSM 1 KAVV -2.5','VBF: KSM 1 KAVV 5','VH: KSM 0 KAVV 15','VH: KSM 0 KHVV 10','VH: KSM 1 KAVV -5','VH: KSM 1 KAVV -2.5','VH: KSM 1 KAVV 2.5','VH: KSM 1 KAVV 5','VBF: KSM 0 KAVV 15','VH: KSM 0 KAVV 15','ggF: KSM 0 KAVV 1']),
+ "kH":set(['ggF: KSM 1 KHVV 1','ggF: KSM 1 KHVV -6','ggF: KSM 1 KHVV 6','VBF: KSM 1 KHVV -5','VBF: KSM 1 KHVV 2.5','VBF: KSM 1 KHVV -2.5','VBF: KSM 1 KHVV 5','VH: KSM 1 KHVV 5','VH: KSM 1 KHVV -5','VH: KSM 1 KHVV -2.5','VH: KSM 1 KHVV 2.5','VH: KSM 1 KHVV 5','VBF: KSM 0 KHVV 10','VH: KSM 0 KHVV 10','ggF: KSM 0 KHVV 1']),
+ "bkg": set(["redu_bbH","redu_WWZ","redu_WZZ","redu_ZZZ","redu_ttZ","redu_ttW","ZZllll","gg_ZZ","bkg","redu"]),
+ "datadriven": set(["data driven bkg","data driven"]),
+ "dat": set(["data"])}
+ #'''
  
  data_driven_bkg = ["redu_bbH", "redu_WWZ","redu_WZZ", "redu_ttZ", "redu_ttW", "redu_ZZZ"]
- 
+
  SamStruct = namedtuple("SamStruct", "proc_id proc Class reweight_type IsDataDriven")
+ 
+ '''
  sample = {
 ##Start of Reducible Background Process
  'mc15_13TeV.344973.aMcAtNloPythia8EvtGen_A14NNPDF23LO_bbH125_yb2_ZZ4lep_noTau':SamStruct('redu_bbH_1',"redu_bbH",set(["redu","bkg","redu_bbH","ALL"]),"default",True),
@@ -39,13 +53,13 @@ class Minitree_H4l:
  'mc15_13TeV.343212.Powheggg2vvPythia8EvtGen_gg_ZZ_bkg_2e2mu_13TeV':SamStruct('ggZZ_2mu2e',"gg_ZZ",set(["bkg","gg_ZZ","ALL"]),"default",False),
  'mc15_13TeV.343213.Powheggg2vvPythia8EvtGen_gg_ZZ_bkg_4l_noTau_13TeV':SamStruct('ggZZ_4l',"gg_ZZ",set(["bkg","gg_ZZ","ALL"]),"default",False),
 ##Start of ggf Process 
- #ggf SM Process                                                                      //or ggf_0p
- 'mc15_13TeV.344158.aMcAtNloPythia8EvtGen_A14NNPDF23LO_ppx0_FxFx_Np012_SM':SamStruct('ggfMG5_0p',"ggH_SM",set(["ggH","sgn","ggH_SM","ggH_kSM","ALL"]),'ggf',False),
- #ggf both Agg and Hgg coupling                                                                  
- 'mc15_13TeV.344167.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg0p5_cosa0p707':SamStruct('ggH_Khgg1_Kagg0p5',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
- 'mc15_13TeV.344168.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAggn0p5_cosa0p707':SamStruct('ggH_Khgg1_Kaggm0p5',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
- 'mc15_13TeV.344169.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg1p41_cosa0p707':SamStruct('ggH_Khgg1_Kagg1p41',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
- 'mc15_13TeV.344170.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg1_cosa0p707':SamStruct('ggH_Khgg1_Kagg1',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
+ #ggf SM Process                                                                      //or ggH_SM
+ 'mc15_13TeV.344158.aMcAtNloPythia8EvtGen_A14NNPDF23LO_ppx0_FxFx_Np012_SM':SamStruct('ggfMG5_0p',"ggH",set(["ggH","sgn","ggH_SM","ggH_kSM","ALL"]),'ggf',False),
+ #ggf both Agg and Hgg coupling                                                            //or ggH_Khgg1..      
+ 'mc15_13TeV.344167.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg0p5_cosa0p707':SamStruct('ggfMG5_Khgg1_Kagg0p5',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344168.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAggn0p5_cosa0p707':SamStruct('ggfMG5_Khgg1_Kaggm0p5',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344169.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg1p41_cosa0p707':SamStruct('ggfMG5_Khgg1_Kagg1p41',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344170.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg1_cosa0p707':SamStruct('ggfMG5_Khgg1_Kagg1',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
  #ggf either Avv or Hvv coupling
  'mc15_13TeV.344159.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kHvv1_cosa1p0':SamStruct('ggfMG5_0phkHv1',"ggf",set(["ggf","ggf_kH","ggf_kAorH","ALL"]),'ggf',False),
  'mc15_13TeV.344161.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kHvvn6_cosa1p0':SamStruct('ggfMG5_0phkHvm6',"ggf",set(["ggf","ggf_kH","ggf_kAorH","ALL"]),'ggf',False),
@@ -107,7 +121,97 @@ class Minitree_H4l:
  'mc15_13TeV.342561.aMcAtNloHerwigppEvtGen_UEEE5_CTEQ6L1_CT10ME_ttH125_4l':SamStruct('ttH',"ttH",set(["ttH","ALL"]),'default',False),
 ##Start of Observed Data
  'data_13TeV':SamStruct('data_run_2_obs','data',set(["dat","ALL"]),"default",False)}
-
+ '''
+ 
+ #'''
+ sample = {
+##Start of Reducible Background Process
+ 'mc15_13TeV.344973.aMcAtNloPythia8EvtGen_A14NNPDF23LO_bbH125_yb2_ZZ4lep_noTau':SamStruct('redu_bbH_1',"redu_bbH",set(["redu","bkg","redu_bbH","ALL"]),"default",True),
+ 'mc15_13TeV.344974.aMcAtNloPythia8EvtGen_A14NNPDF23LO_bbH125_ybyt_ZZ4lep_noTau':SamStruct('redu_bbH_2',"redu_bbH",set(["redu","bkg","redu_bbH","ALL"]),"default",True),
+ 'mc15_13TeV.361621.Sherpa_CT10_WWZ_4l2v':SamStruct('redu_WWZ',"redu_WWZ",set(["redu","bkg","redu_WWZ","ALL"]),"default",True),
+ 'mc15_13TeV.361623.Sherpa_CT10_WZZ_5l1v':SamStruct('redu_WZZ',"redu_WZZ",set(["redu","bkg","redu_WZZ","ALL"]),"default",True),
+ 'mc15_13TeV.361625.Sherpa_CT10_ZZZ_6l0v':SamStruct('redu_ZZZ_1',"redu_ZZZ",set(["redu","bkg","redu_ZZZ","ALL"]),"default",True),
+ 'mc15_13TeV.361626.Sherpa_CT10_ZZZ_4l2v':SamStruct('redu_ZZZ_2',"redu_ZZZ",set(["redu","bkg","redu_ZZZ","ALL"]),"default",True),
+ 'mc15_13TeV.410218.aMcAtNloPythia8EvtGen_MEN30NLO_A14N23LO_ttee':SamStruct('redu_ttZ_1',"redu_ttZ",set(["redu","bkg","redu_ttZ","ALL"]),"default",True),
+ 'mc15_13TeV.410219.aMcAtNloPythia8EvtGen_MEN30NLO_A14N23LO_ttmumu':SamStruct('redu_ttZ_2',"redu_ttZ",set(["redu","bkg","redu_ttZ","ALL"]),"default",True),
+ 'mc15_13TeV.410144.Sherpa_NNPDF30NNLO_ttW':SamStruct('redu_ttW',"redu_ttW",set(["redu_ttW","bkg","redu_ttW","ALL"]),"default",True),
+##Start of Non Reducible Background Process
+ 'mc15_13TeV.345107.Sherpa_221_NNPDF30NNLO_llll_m4l100_300_filt100_150':SamStruct('ZZllll_mll4_1',"ZZllll",set(["bkg","ZZllll","ALL"]),'qqZZ',False),
+ 'mc15_13TeV.363490.Sherpa_221_NNPDF30NNLO_llll':SamStruct('ZZllll_mll4_2',"ZZllll",set(["bkg","ZZllll","ALL"]),'qqZZ',False),
+ 'mc15_13TeV.345108.Sherpa_221_NNPDF30NNLO_llll_m4l300':SamStruct('ZZllll_mll4_3',"ZZllll",set(["bkg","ZZllll","ALL"]),'qqZZ',False), 
+ 'mc15_13TeV.343212.Powheggg2vvPythia8EvtGen_gg_ZZ_bkg_2e2mu_13TeV':SamStruct('ggZZ_2mu2e',"gg_ZZ",set(["bkg","gg_ZZ","ALL"]),"default",False),
+ 'mc15_13TeV.343213.Powheggg2vvPythia8EvtGen_gg_ZZ_bkg_4l_noTau_13TeV':SamStruct('ggZZ_4l',"gg_ZZ",set(["bkg","gg_ZZ","ALL"]),"default",False),
+##Start of ggf Process 
+ #ggf SM Process                                                                      //or ggH_SM
+ 'mc15_13TeV.344158.aMcAtNloPythia8EvtGen_A14NNPDF23LO_ppx0_FxFx_Np012_SM':SamStruct('ggF: KHgg 1 KAgg 0',"ggH",set(["ggH_SM","sgn","ggH_SM","ggH_kSM","ALL"]),'ggf',False),
+ #ggf both Agg and Hgg coupling                                                            //or ggH_Khgg1..      
+ 'mc15_13TeV.344167.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg0p5_cosa0p707':SamStruct('ggF: KHgg 1 KAgg 0.5',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344168.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAggn0p5_cosa0p707':SamStruct('ggF: KHgg 1 KAgg -0.5',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344169.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg1p41_cosa0p707':SamStruct('ggfMG5_Khgg1_Kagg1p41',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344170.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAgg1_cosa0p707':SamStruct('ggF: KHgg 1 KAgg 1',"ggH_BSM",set(["ggH","sgn","ggH_BSM","ggH_kA_kH","ALL"]),'ggf4',False),
+ #ggf either Avv or Hvv coupling
+ 'mc15_13TeV.344159.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kHvv1_cosa1p0':SamStruct('ggF: KSM 0 KHVV 1',"ggf",set(["ggf","ggf_kH","ggf_kAorH","ALL"]),'ggf',False),
+ 'mc15_13TeV.344161.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kHvvn6_cosa1p0':SamStruct('ggF: KSM 1 KHVV -6',"ggf",set(["ggf","ggf_kH","ggf_kAorH","ALL"]),'ggf',False),
+ 'mc15_13TeV.344160.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kHvv6_cosa1p0':SamStruct('ggF: KSM 1 KHVV 6',"ggf",set(["ggf","ggf_kH","ggf_kAorH","ALL"]),'ggf',False),  
+ 'mc15_13TeV.344162.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAvv1_cosa0p707':SamStruct('ggF: KSM 0 KAVV 1',"ggf",set(["ggf","ggf_kA","ggf_kAorH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344164.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAvvn6_cosa0p707':SamStruct('ggF: KSM 1 KAVV -6',"ggf",set(["ggf","ggf_kA","ggf_kAorH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344163.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAvv6_cosa0p707':SamStruct('ggF: KSM 1 KAVV 6',"ggf",set(["ggf","ggf_kA","ggf_kAorH","ALL"]),'ggf4',False), 
+ #ggf both Avv and Hvv coupling
+ 'mc15_13TeV.344166.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAHvvn6_cosa0p707':SamStruct('ggF: KSM 1 KAHVV -6',"ggf",set(["ggf","ggf_kA_kH","ALL"]),'ggf4',False),
+ 'mc15_13TeV.344165.aMcAtNloPythia8EvtGen_A14NNPDF23LO_FxFx_kAHvv6_cosa0p707':SamStruct('ggF: KSM 1 KAHVV 6',"ggf",set(["ggf","ggf_kA_kH","ALL"]),'ggf4',False),  
+##Start of VBF Process
+ #VBF Only SM coupling
+ 'mc15_13TeV.343247.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0p':SamStruct('VBF: KSM 1',"VBF",set(["sgn","VBF","VBF_kSM","ALL"]),'vbf',False),
+ #VBF Only Avv or Hvv coupling 
+ 'mc15_13TeV.343249.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0phkHv10':SamStruct('VBF: KSM 0 KHVV 10',"VBF",set(["VBF","VBF_kH","VBF_kAorH","ALL"]),'vbf',False),
+ 'mc15_13TeV.343252.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0mkAv15':SamStruct('VBF: KSM 0 KAVV 15',"VBF",set(["VBF","VBF_kA","VBF_kAorH","ALL"]),'vbf',False), #Some issue here
+ #VBF SM + Either Avv or Hvv coupling
+ 'mc15_13TeV.343255.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkAvm5':SamStruct('VBF: KSM 1 KAVV -5',"VBF",set(["VBF","VBF_kSM_kA","VBF_kSM_kAorH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.343256.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkAvm2p5':SamStruct('VBF: KSM 1 KAVV -2.5',"VBF",set(["VBF","VBF_kSM_kA","VBF_kSM_kAorH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.343254.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkAv2p5':SamStruct('VBF: KSM 1 KAVV 2.5',"VBF",set(["VBF","VBF_kSM_kA","VBF_kSM_kAorH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.343253.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkAv5':SamStruct('VBF: KSM 1 KAVV 5',"VBF",set(["VBF","VBF_kSM_kA","VBF_kSM_kAorH","ALL"]),'vbf4',False), 
+ 'mc15_13TeV.343261.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphkHvm5':SamStruct('VBF: KSM 1 KHVV -5',"VBF",set(["VBF","VBF_kSM_kH","VBF_kSM_kAorH","ALL"]),'vbf',False),
+ 'mc15_13TeV.343262.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphkHvm2p5':SamStruct('VBF: KSM 1 KHVV -2.5',"VBF",set(["VBF","VBF_kSM_kH","VBF_kSM_kAorH","ALL"]),'vbf',False),
+ 'mc15_13TeV.343260.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphkHv2p5':SamStruct('VBF: KSM 1 KHVV 2.5',"VBF",set(["VBF","VBF_kSM_kH","VBF_kSM_kAorH","ALL"]),'vbf',False),
+ 'mc15_13TeV.343259.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphkHv5':SamStruct('VBF: KSM 1 KHVV 5',"VBF",set(["VBF","VBF_kSM_kH","VBF_kSM_kAorH","ALL"]),'vbf',False),
+ #VBF Both SM and Avv and Hvv coupling
+ 'mc15_13TeV.344155.MGPy8EG_A14NNPDF23LO_vbfhzz4l_0pphmkHvm2p5kAvm5':SamStruct('vbfMG5_0pphm_khvm2p5_kAvm5_had',"VBF",set(["VBF","VBF_kSM_kA_kH","ALL"]),'vbf4',False), #Probable misnaming
+ 'mc15_13TeV.344154.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkHv5kAv6':SamStruct('vbfMG5_0pphm_khv5_kAv6_had',"VBF",set(["VBF","VBF_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344152.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkHv2p5kAvm5':SamStruct('vbfMG5_0pphm_khv2p5_kAvm5_had',"VBF",set(["VBF","VBF_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344157.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkHvm5kAvm6':SamStruct('vbfMG5_0pphm_khvm5_kAvm6_had',"VBF",set(["VBF","VBF_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344153.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkHv5kAv5':SamStruct('vbfMG5_0pphm_khv5_kAv5_had',"VBF",set(["VBF","VBF_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344156.MadGraphPythia8EvtGen_A14NNPDF23LO_vbfhzz4l_0pphmkHvm5kAv5':SamStruct('vbfMG5_0pphm_khvm5_kAv5_had',"VBF",set(["VBF","VBF_kSM_kA_kH","ALL"]),'vbf4',False),
+##Start of VH Process
+ #VH Only SM coupling 
+ 'mc15_13TeV.344135.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0p':SamStruct('VH: KSM 1',"VH",set(["sgn","VH","VH_kSM","ALL"]),'vbf',False),
+ #VH Only Avv or Hvv coupling
+ 'mc15_13TeV.344145.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0mkAv15':SamStruct('VH: KSM 0 KAVV 15',"VH",set(["VH","VH_kA","VH_kAorH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344140.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0phkHv10':SamStruct('VH: KSM 0 KHVV 10',"VH",set(["VH","VH_kA","VH_kAorH","ALL"]),'vbf',False),
+ #VH SM + Either Avv or Hvv coupling
+ 'mc15_13TeV.344142.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkAvm5':SamStruct('VH: KSM 1 KAVV -5',"VH",set(["VH","VH_kSM_kAorH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344144.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkAvm2p5':SamStruct('VH: KSM 1 KAVV -2.5',"VH",set(["VH","VH_kSM_kA","VH_kSM_kAorH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344143.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkAv2p5':SamStruct('VH: KSM 1 KAVV 2.5',"VH",set(["VH","VH_kSM_kA","VH_kSM_kAorH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344141.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkAv5':SamStruct('VH: KSM 1 KAVV 5',"VH",set(["VH","VH_kSM_kA","VH_kSM_kAorH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344137.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphkHvm5':SamStruct('VH: KSM 1 KHVV -5',"VH",set(["VH","VH_kSM_kH","VH_kSM_kAorH","ALL"]),'vbf',False),
+ 'mc15_13TeV.344139.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphkHvm2p5':SamStruct('VH: KSM 1 KHVV -2.5',"VH",set(["VH","VH_kSM_kH","VH_kSM_kAorH","ALL"]),'vbf',False),
+ 'mc15_13TeV.344138.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphkHv2p5':SamStruct('VH: KSM 1 KHVV 2.5',"VH",set(["VH","VH_kSM_kH","VH_kSM_kAorH","ALL"]),'vbf',False),
+ 'mc15_13TeV.344136.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphkHv5':SamStruct('VH: KSM 1 KHVV 5',"VH",set(["VH","VH_kSM_kH","VH_kSM_kAorH","ALL"]),'vbf',False),
+ #VH Both SM and Avv and Hvv coupling
+ 'mc15_13TeV.344149.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHvm5kAvm6':SamStruct('vbfMG5_0pphm_khvm5_kAvm6_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344147.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHvm2p5kAvm5':SamStruct('vbfMG5_0pphm_khvm2p5_kAvm5_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344148.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHvm5kAv5':SamStruct('vbfMG5_0pphm_khvm5_kAv5_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344146.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHv2p5kAvm5':SamStruct('vbfMG5_0pphm_khv2p5_kAvm5_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344151.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHv5kAv5':SamStruct('vbfMG5_0pphm_khv5_kAv5_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.344150.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHv5kAv6':SamStruct('vbfMG5_0pphm_khv5_kAv6_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.345050.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHv5kAv10':SamStruct('vbfMG5_0pphm_khv5_kAv10_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.345051.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHvm10kAv10':SamStruct('vbfMG5_0pphm_khvm10_kAv10_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+ 'mc15_13TeV.345052.MGPy8EG_A14NNPDF23LO_vhlep125_4l_0pphmkHv10kAvm10':SamStruct('vbfMG5_0pphm_khv10_kAvm10_lep',"VH",set(["VH","VH_kSM_kA_kH","ALL"]),'vbf4',False),
+##Start of ttH Process
+ 'mc15_13TeV.342561.aMcAtNloHerwigppEvtGen_UEEE5_CTEQ6L1_CT10ME_ttH125_4l':SamStruct('ttH',"ttH",set(["ttH","ALL"]),'default',False),
+##Start of Observed Data
+ 'data_13TeV':SamStruct('data_run_2_obs','data',set(["dat","ALL"]),"default",False)}
+ #'''
+ 
  prod_type = {
  0:"0jet",
  1:"1jet",
@@ -125,13 +229,13 @@ class Minitree_H4l:
  "2jet_VH_lowpt4l": "pt4l_fsr<=150.",
  "2jet_VH_highpt4l":"pt4l_fsr>150."},
  "2jet_VBF":{
- "2jet_VBF_lowptjet":"pt4l_fsr<=200.",
- "2jet_VBF_highptjet":"pt4l_fsr>200."}}
+ "2jet_VBF_lowptjet":"leading_jet_pt<=200.",
+ "2jet_VBF_highptjet":"leading_jet_pt>200."}}
  
  #prod_type_ptjet = {
  #"2jet_VH":{
- #"2jet_VH_lowptjet":"leading_jet_pt<=200.",
- #"2jet_VH_highptjet":"leading_jet_pt>200."}}
+ #"2jet_VH_lowptjet":"leading_jet_pt<=150.",
+ #"2jet_VH_highptjet":"leading_jet_pt>150."}}
  
  luminosity = 1 # Normalized to 36.1 pb-1 
 
@@ -237,7 +341,7 @@ class Minitree_H4l:
  
  def SimpleSelection(self, Tree, method = "default"):
   if method == "default": 
-   return ((getattr(Tree,'pass_vtx4lCut')) and (118.<getattr(Tree,'m4l_constrained')<129.))
+   return getattr(Tree,'pass_vtx4lCut') and (118.<getattr(Tree,'m4l_constrained')<129.)
   else:
    return False
     
@@ -247,7 +351,7 @@ class Minitree_H4l:
    histograms = {i:ROOT.TH1D("","",len(self.optimised_binning[param])-1,self.optimised_binning[param]) for i in self.category_list_valid if not category.isdisjoint(self.category_type[i])} #This require python 2.7 or above
   else:
    histograms = {i:ROOT.TH1D("","",nbin,xmin,xmax) for i in self.category_list_valid if not category.isdisjoint(self.category_type[i])} #This require python 2.7 or above
-  if CountParamInStr(param) == 1:  #Avoid using eval if only one parameter is considered
+  if CountParamInStr(param) != 1:  #Avoid using eval if only one parameter is considered
    if ('[' in param):
     param,index = filter(bool,re.split("[\[\]]*", param))
     index = int(index)

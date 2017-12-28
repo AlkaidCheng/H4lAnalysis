@@ -2,6 +2,7 @@ import ROOT
 import Utilities
 from H4lAnalysis import Minitree_H4l
 from collections import namedtuple
+from collections import OrderedDict
 import os
 from os.path import join
 from os import system
@@ -12,18 +13,22 @@ from pdb import set_trace
 class ColorWheel:
  color = {
  "bkg" : ["42","39","46","606","862","8","9","30","49","9"],
- "sgn" : ["4","2","3","6"],
+ "sgn" : ["4","2","3","6","7"],
  "def" : ["4","2","3","6","7","5","28","39","46","606","862"],
- "kH"  : ["4","2","5"],
- "kA"  : ["6","3","7"],
+ "kH"  : ["42","39","46","606"],
+ "kA"  : ["4","28","39"],
  "sm": ["1"],
  "datadriven": ["15"],
  "dat": ["1"]}
  def __init__(self):
   self.index = {}
+  self.proc = 'NULL'
   for key in self.color:
    self.index[key] = -1
  def next(self,proc_type):
+  if (proc_type != self.proc):
+   self.__init__()
+  self.proc = proc_type
   self.index[proc_type] = (self.index[proc_type] + 1) % len(self.color[proc_type])
   return self.color[proc_type][self.index[proc_type]]
 
@@ -32,9 +37,9 @@ Kinematics_Plot_Style = {
  "bkg":"LineColor=1,LineWidth=1,FillColor=ColorWheel",
  "sgn":"LineColor=ColorWheel,LineWidth=1,LineStyle=2,FillColor=0",
  "def":"LineColor=ColorWheel,LineWidth=1,LineStyle=2,FillColor=0",
- "kH":"LineColor=ColorWheel,LineWidth=1,LineStyle=3,FillColor=0",
- "kA":"LineColor=ColorWheel,LineWidth=1,LineStyle=7,FillColor=0",
- "sm":"LineColor=ColorWheel,LineWidth=2,LineStyle=1",
+ "kH":"LineColor=ColorWheel,LineWidth=2,LineStyle=1,FillColor=0",
+ "kA":"LineColor=ColorWheel,LineWidth=2,LineStyle=1,FillColor=0",
+ "sm":"LineColor=ColorWheel,LineWidth=2,LineStyle=1,FillColor=1,FillStyle=3244",
  "uncertainty":"FillStyle=3244,FillColor=16",
  "datadriven":"LineColor=1,LineWidth=1,FillColor=12",
  "dat":"MarkerStyle=8,LineColor=1,LineWidth=1"}
@@ -82,10 +87,20 @@ def SaveSummary(h,output):
    f.write("{0}\t{1}\n".format(key,h[key].Integral()))
  f.close()
 
-def stacked_kinematics_plot(h,title = "", xtitle = "", ytitle = "",canvasstyle = None, style = None, drawstyle = None,nostat = True, normalize = None,ymargin = 0.,save = True,output = "result.pdf", saveROOT = False):
-
- c = ROOT.TCanvas()
+def stacked_kinematics_plot(h,title = "", xtitle = "", ytitle = "",canvasstyle = None, style = None, drawstyle = None,nostat = True, normalize = None,ymargin = 0.,save = True,output = "result.pdf", saveROOT = False, ratio = False):
+  
+ c = ROOT.TCanvas('c','c',700,800)
  c.cd()
+
+ if ratio:
+  pads = TwoPadSplit(0.30, 0.01, 0.01)
+  for padx in pads:
+   Set(padx, Tickx=1, Ticky=1)
+  pads[0].cd()
+  ROOT.SetOwnership(c, False)    #Prevent Corruption
+  ROOT.SetOwnership(pads[0], False)  #Prevent Corruption
+  ROOT.SetOwnership(pads[1], False)  #Prevent Corruption
+  
  hs = ROOT.THStack(title,title)
  leg = LegendIni(ncol = int(math.ceil(len(h)/6.)))
  color = ColorWheel()
@@ -99,19 +114,26 @@ def stacked_kinematics_plot(h,title = "", xtitle = "", ytitle = "",canvasstyle =
  elif normalize == "INDIVIDUAL":
   for category in h:
    h[category].Scale(1/h[category].Integral())
+ 
+ h_by_proc_type = OrderedDict({ i: {} for i in ["datadriven", "bkg", "sgn" ,"def" ,"kH" , "kA" , "sm",  "dat"]})
  for category in h:
  ########################################################################
   proc_type = "def"
   for proc in Minitree_H4l.proc_type:
    if category in Minitree_H4l.proc_type[proc]:
     proc_type = proc
+  h_by_proc_type[proc_type][category] = h[category]
  ########################################################################
-  GraphSet(h[category],Kinematics_Plot_Style[proc_type].replace("ColorWheel",color.next(proc_type)))
-  leg.AddEntry(h[category],category,Kinematics_Legend_Style[proc_type])
-  if proc_type == "dat":
-   h_data = h[category]
-   continue  
-  hs.Add(h[category])
+ for proc_type in h_by_proc_type:
+  for category in h_by_proc_type[proc_type]:
+   GraphSet(h_by_proc_type[proc_type][category],Kinematics_Plot_Style[proc_type].replace("ColorWheel",color.next(proc_type)))
+   leg.AddEntry(h_by_proc_type[proc_type][category],category,Kinematics_Legend_Style[proc_type])
+   if proc_type == "dat":
+    h_data = h[category]
+    continue  
+   hs.Add(h[category])
+  
+  
  leg = LegendResize(leg)
  if canvasstyle is not None:
   GraphSet(c,canvasstyle)
@@ -129,14 +151,43 @@ def stacked_kinematics_plot(h,title = "", xtitle = "", ytitle = "",canvasstyle =
   for category in h:
    if h[category].GetMaximum() > maximum:
     maximum = h[category].GetMaximum()
-  hs.SetMaximum(maximum*(1+ymargin))
+  if c.GetLogy():
+   hs.SetMaximum(maximum**(1+ymargin))
+  else:
+   hs.SetMaximum(maximum*(1+ymargin))
  else:
-  hs.SetMaximum(hs.GetMaximum()*(1+ymargin))
-
+  if c.GetLogy():
+   hs.SetMaximum(hs.GetMaximum()**(1+ymargin))
+  else:
+   hs.SetMaximum(hs.GetMaximum()*(1+ymargin))
  leg.Draw()
  if h_data is not None:
   h_data.Draw("SAME")
-  hs.SetMaximum(h_data.GetMaximum()*(1+ymargin))
+  if c.GetLogy():
+   hs.SetMaximum(h_data.GetMaximum()**(1+ymargin))
+  else:
+   hs.SetMaximum(h_data.GetMaximum()*(1+ymargin)) 
+ 
+ if ratio:
+    pads[1].cd()
+    newpad_h = []
+    for category in h:
+     if category in Minitree_H4l.proc_type['sm']:
+      base_h = h[category].Clone()  
+    for category in h:
+     if category not in Minitree_H4l.proc_type['sm']:
+      newpad_h.append(h[category].Clone())
+      newpad_h[-1].SetStats(0)
+      newpad_h[-1].Divide(base_h)
+      for i in xrange(1, newpad_h[-1].GetNbinsX()+1):
+       newpad_h[-1].SetBinError(i, 0.)
+      newpad_h[-1].Draw('SAME')
+    line = ROOT.TLine(newpad_h[-1].GetXaxis().GetXmin(),1,newpad_h[-1].GetXaxis().GetXmax(),1)
+    line.SetLineColor(1)
+    line.SetLineWidth(1)
+    line.Draw()
+    SetupTwoPadSplitAsRatio(pads, hs, newpad_h[0], 'Ratio_{}', True, 0.2, 1.8)  
+
   
  Utilities.try_makedir(os.path.dirname(output))
  if save:
@@ -320,6 +371,11 @@ def LatexText(font, size):
  t.SetTextSize(size)
  return t
  
+def LatexTextNoNDC(font, size):
+ t = ROOT.TLatex()
+ t.SetTextFont(font)
+ t.SetTextSize(size)
+ return t 
 
 def LLScanPlot( f_Asimov, f_Obs, leg_Asimov = "SM Expected", leg_Obs = "Observed",xtitle = "#kappa", ytitle = "-2ln(#lambda)", SMfix = True, higgs = "H", key = "Graph", output = "result.pdf"):
  
@@ -349,14 +405,21 @@ def LLScanPlot( f_Asimov, f_Obs, leg_Asimov = "SM Expected", leg_Obs = "Observed
  g_obs.SetMarkerColorAlpha(0,0)
  g_asimov.SetMarkerColorAlpha(0,0)
  Y_obs = list(g_obs.GetY())
+ X_obs = list(g_obs.GetX())
  Y_asi = list(g_asimov.GetY())
- g_obs.SetMinimum(0)
- g_obs.SetMaximum(1.5*max(Y_obs))
- g_obs.GetXaxis().SetTitle(xtitle)
- g_obs.GetYaxis().SetTitle(ytitle)
- g_obs.Draw("")
- g_asimov.Draw("SAME")
- 
+ Y_max = max(Y_asi) if max(Y_asi) > max(Y_obs) else max(Y_obs)
+ g_asimov.SetMinimum(0)
+ g_asimov.SetMaximum(1.5*Y_max)
+
+ g_asimov.GetXaxis().SetTitle(xtitle)
+ g_asimov.GetYaxis().SetTitle(ytitle)
+ if (min(Y_obs)<0):
+  offset = 0 - min(Y_obs)
+  for i in range(len(Y_obs)):
+   g_obs.SetPoint(i,X_obs[i],Y_obs[i]+offset)
+ g_asimov.Draw("")
+ g_obs.Draw("SAME")
+
  leg = ROOT.TLegend(0.65,0.85 ,0.85,0.75)
  leg.SetBorderSize(0)
  leg.SetTextFont(62)
@@ -387,4 +450,98 @@ def LLScanPlot( f_Asimov, f_Obs, leg_Asimov = "SM Expected", leg_Obs = "Observed
  text5 = LatexText(73,18)
  text4.DrawLatex(0.15,0.73, "Observed: #kappa_{"+higgs+"vv} = " +"{0:.1f}".format(BSM_min_obs) + ", #kappa_{SM} = " + "{0:.2f}".format(SM_min_obs))
  text5.DrawLatex(0.15,0.69, "Expected: #kappa_{"+higgs+"vv} = " +"{0:.1f}".format(BSM_min_asi) + ", #kappa_{SM} = " + "{0:.2f}".format(SM_min_asi))
- c.SaveAs(output)
+ l_1sigma = ROOT.TLine(g_obs.GetXaxis().GetXmin(),1,g_obs.GetXaxis().GetXmax(),1)
+ l_1sigma.SetLineStyle(2)
+ l_1sigma.SetLineColor(33)
+ l_1sigma.SetLineWidth(2)
+ l_1sigma.Draw()
+ text_CL1 = LatexTextNoNDC(73,20)
+ text_CL1.DrawLatex(g_obs.GetXaxis().GetXmax()-(g_obs.GetXaxis().GetXmax()-g_obs.GetXaxis().GetXmin())*0.15,1.1,"68%CL")
+ text_CL2 = LatexTextNoNDC(73,20)
+ text_CL1.DrawLatex(g_obs.GetXaxis().GetXmax()-(g_obs.GetXaxis().GetXmax()-g_obs.GetXaxis().GetXmin())*0.15,3.94,"95%CL")
+ l_95CL = ROOT.TLine(g_obs.GetXaxis().GetXmin(),3.84,g_obs.GetXaxis().GetXmax(),3.84)
+ l_95CL.SetLineStyle(2)
+ l_95CL.SetLineColor(33)
+ l_95CL.SetLineWidth(2)
+ l_95CL.Draw()
+ GetLikelihoodFitStat(f_Asimov, f_Obs)
+ pad.SaveAs(output)
+ 
+def GetLikelihoodFitStat(File_Asi,File_Obs,Graph = "Graph", Likelihood = "Likelihood"):
+ f_obs = ROOT.TFile(File_Obs)
+ f_asi = ROOT.TFile(File_Asi)
+ g_obs = f_obs.Get(Graph)
+ g_asi = f_asi.Get(Graph)
+ x_obs,y_obs = g_obs.GetX(),g_obs.GetY()
+ x_asi,y_asi = g_asi.GetX(),g_asi.GetY()
+
+ Sigma =  abs(ROOT.TMath.NormQuantile(1-ROOT.TMath.Prob(y_obs[list(x_obs).index(0)],1)))
+ Sigma_68CL_asi =  Utilities.Get1DIntersectionsGivenY(x_asi,y_asi,1.)
+ Sigma_95CL_asi =  Utilities.Get1DIntersectionsGivenY(x_asi,y_asi,3.841)
+ Sigma_68CL_obs =  Utilities.Get1DIntersectionsGivenY(x_obs,y_obs,1.)
+ Sigma_95CL_obs =  Utilities.Get1DIntersectionsGivenY(x_obs,y_obs,3.841)
+ pos_obs = list(y_obs).index(min(y_obs))
+ t_obs = f_obs.Get(Likelihood)
+ t_obs.GetEntry(pos_obs)
+ BSM_min_obs = t_obs.BSM_coupling
+ SM_min_obs = t_obs.SM_coupling
+ Type = 'fixed' if 'fixed' in File_Asi else 'free'
+ SM_text = '-' if 'fixed' in File_Asi else "{0:.2f}".format(SM_min_obs)
+ s = '$\kappa_\\text{SM}$ \\text{fixed} &' + Utilities.BracketListStr(Sigma_68CL_asi) + '&'+ Utilities.BracketListStr(Sigma_95CL_asi) + '&' + Utilities.BracketListStr(Sigma_68CL_obs) +'&' + Utilities.BracketListStr(Sigma_95CL_asi) + '&' + "{0:.2f}".format(BSM_min_obs) +'&'+ SM_text +'&' + "{0:.2f}".format(Sigma)
+ print s
+
+
+def TwoPadSplit(split_point, gap_low, gap_high):
+    upper = ROOT.TPad('upper', 'upper', 0., 0., 1., 1.)
+    upper.SetBottomMargin(split_point + gap_high)
+    upper.SetFillStyle(4000)
+    upper.Draw()
+    lower = ROOT.TPad('lower', 'lower', 0., 0., 1., 1.)
+    lower.SetTopMargin(1 - split_point + gap_low)
+    lower.SetFillStyle(4000)
+    lower.Draw()
+    upper.cd()
+    result = [upper, lower]
+    return result
+    
+def SetupTwoPadSplitAsRatio(pads, upper, lower, y_title, y_centered,
+                               y_min, y_max):
+    if lower.GetXaxis().GetTitle() == '':
+        lower.GetXaxis().SetTitle(upper.GetXaxis().GetTitle())
+    upper.GetXaxis().SetTitle("")
+    upper.GetXaxis().SetLabelSize(0)
+    upper_h = 1. - pads[0].GetTopMargin() - pads[0].GetBottomMargin()
+    lower_h = 1. - pads[1].GetTopMargin() - pads[1].GetBottomMargin()
+    lower.GetYaxis().SetTickLength(ROOT.gStyle.GetTickLength() * upper_h / lower_h)
+    pads[1].SetTickx(1)
+    pads[1].SetTicky(1)
+    lower.GetYaxis().SetTitle(y_title)
+    lower.GetYaxis().CenterTitle(y_centered)
+    lower.GetYaxis().SetNdivisions(505)
+    if y_max > y_min:
+        lower.SetMinimum(y_min)
+        lower.SetMaximum(y_max)
+        
+def MakeRatioHist(num, den, num_err, den_err):
+    """Make a new ratio TH1 from numerator and denominator TH1s with optional
+    error propagation
+    
+    Args:
+        num (TH1): Numerator histogram
+        den (TH1): Denominator histogram
+        num_err (bool): Propagate the error in the numerator TH1
+        den_err (bool): Propagate the error in the denominator TH1
+    
+    Returns:
+        TH1: A new TH1 containing the ratio
+    """
+    result = num.Clone()
+    if not num_err:
+        for i in xrange(1, result.GetNbinsX()+1):
+            result.SetBinError(i, 0.)
+    den_fix = den.Clone()
+    if not den_err:
+        for i in xrange(1, den_fix.GetNbinsX()+1):
+            den_fix.SetBinError(i, 0.)
+    result.Divide(den_fix)
+    return result

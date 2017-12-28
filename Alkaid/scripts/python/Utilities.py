@@ -1,10 +1,20 @@
 from collections import namedtuple
+import sys
 from pdb import set_trace
 import os
 from os.path import join
 from os import system
 from array import array
 import re
+try:
+ import scipy
+ import scipy.interpolate
+except ImportError:
+ pass
+try:
+ import numpy
+except ImportError:
+ pass
 
 def IsNumber(s):
     try: 
@@ -33,6 +43,8 @@ def ParsePlotInstructionFromText(text):
  text = open(text)
  instruction = {"PARAM":[]}
  for line in text.readlines():
+  if line.startswith('\n'):
+   continue    #Skip empty line
   if line.startswith("#include"):
    key,value = line.replace("#include","").split("=",2)
    key = key.strip()
@@ -49,7 +61,7 @@ def ParsePlotInstructionFromText(text):
  return instruction
  
 def AddPrefixToChars(s,prefix = "Tree"):
- params = [i for i in filter(bool, re.split("[^a-zA-Z0-9\[\]\_]*", s)) if not i.isdigit()]
+ params = set([i for i in filter(bool, re.split("[^a-zA-Z0-9\[\]\_]*", s)) if (not i.isdigit()) and (i!='int') and (i!='abs')])
  for param in params:
   s = s.replace(param,'{0}.{1}'.format(prefix,param))
  return s 
@@ -60,7 +72,7 @@ def ParsePrefixToDictValues(d,prefix = "Tree"):
  return d
  
 def CountParamInStr(s):
- return len([i for i in filter(bool, re.split("[^a-zA-Z0-9\[\]\_]*", s)) if not i.isdigit()])
+ return len([i for i in filter(bool, re.split("[^a-zA-Z0-9\[\]\_]*", s)) if (not i.isdigit()) and (i!='int')and (i!='abs')])
 
 def try_remove(f):
  if (os.path.isfile(f)):
@@ -72,3 +84,14 @@ def try_remove(f):
 def try_makedir(f):
  if (not os.path.isdir(f)):
   os.makedirs(f)
+  
+def Get1DIntersectionsGivenY(x,y,value):
+ if ('scipy.interpolate' not in sys.modules) or ('numpy' not in sys.modules):
+  pass
+ else:
+  return sorted(list(scipy.interpolate.UnivariateSpline(x, numpy.array(y) - value, s=0).roots()))
+
+def BracketListStr(l):
+ l = ['{:.2f}'.format(i) for i in l]
+ s = '[' +','.join(l)+ ']'
+ return s

@@ -52,6 +52,7 @@ namespace FitInfo {
 TString TotalWidthFunction_khvv = "(1/( 0.76011 + 0.02619*(@0*@0 + 0.0012583*@1*@1 + 0.060434*@0*@1) + 0.2137*(@0*@0 + 0.002958494*@1*@1 + 0.091485142*@0*@1)))";
 TString TotalWidthFunction_kavv = "(1/( 0.76011 + 0.02619*(@0*@0 + 0.0005457336*@1*@1 - 0.00002061966*@0*@1) + 0.2137*(@0*@0 + 0.001219426*@1*@1 - 0.000001918664*@0*@1)))";
 TString TotalWidthFunction_khvv_kavv = "(1/( 0.76011 + 0.02619*(@0*@0 + 0.001287352*@1*@1 + 0.060486166*@0*@1 + 0.000525296*@2*@2 + 0.000043478*@0*@2 + 0.000489723*@1*@2) + 0.2137*(@0*@0 + 0.002932275*@1*@1 + 0.091639792*@0*@1 + 0.001219052*@2*@2 -0.000034731*@2*@0 -0.000002481*@1*@2)))";
+TString TotalWidthFunction_khgg_kagg = "(1/( 0.9143 + 0.0857*(1*@0*@0+ 2.24989*@1*@1)))";
 TString Formula_Exctracted_For_ttH_khvv = "@0*@0 + 0.001281*@1*@1 + 0.060305*@0*@1";
 TString Formula_Exctracted_For_ttH_kavv = "@0*@0 + 0.00052654431*@1*@1 - 0.00035524*@0*@1";
 TString Formula_Exctracted_For_ttH_khvv_kavv = "(@0*@0 + 0.001287352*@1*@1 + 0.060486166*@0*@1 + 0.000525296*@2*@2 + 0.000043478*@0*@2 + 0.000489723*@1*@2)";
@@ -63,10 +64,12 @@ protected:
 	bool total_width_fix;
 	bool ggf_BR_modification;
   bool Asimov;
+  bool total_mu_ggf;
 	int NOB;				//Number Of Base
 	int NOB_ggf;			//Number Of Base ggf
 	TString TotalWidthFunction;
 	TString Formula_Exctracted_For_ttH;
+  TString mode;
 	double SM_coupling;
 	double BSM_coupling1;
 	double m2DLL;
@@ -100,6 +103,7 @@ protected:
 	RooRealVar* nuis_SM_nll_ggf;
 	RooRealVar* ga;
 	RooRealVar* gb;
+  RooRealVar* gggf;
 	RooArgList* normList;
 
 	RooAbsPdf* NewPDF;
@@ -138,7 +142,7 @@ protected:
 	void DerivedClassVariablesIni(const TString &ReadoutInput = PATH_TO_TXT + "function_khvv.txt", const TString &ggfReadoutInput = PATH_TO_TXT + "function_ggf_SM_1_p6_1_m6.txt");
 	void DoScan_Uncon();
 public:
-	LikelihoodFitting(const TString &SystErrInput = PATH_TO_TXT + SYS_INPUT, const TString &CouplingInput = PATH_TO_TXT + COUPLING_INPUT_1D, const TString &ReadoutInput = PATH_TO_TXT + READOUT_INPUT_1D, const TString &ggfReadoutInput = PATH_TO_TXT + GGF_READOUT_INPUT_1D, const TString &wsInput = PATH_TO_TXT + WORKSPACE_INPUT, const TString &workspace = "combined", const TString &model = "ModelConfig", const TString &dataname = "obsData", const bool &_SM_fix_ = true, const bool & _total_width_fix_ = true, const int &_NOB_ = 5, const int &_NOB_ggf_ = 3, const bool &_ggf_BR_modification_ = true, const bool &_Asimov_ = true);
+	LikelihoodFitting(const TString &SystErrInput = PATH_TO_TXT + SYS_INPUT, const TString &CouplingInput = PATH_TO_TXT + COUPLING_INPUT_1D, const TString &ReadoutInput = PATH_TO_TXT + READOUT_INPUT_1D, const TString &ggfReadoutInput = PATH_TO_TXT + GGF_READOUT_INPUT_1D, const TString &wsInput = PATH_TO_TXT + WORKSPACE_INPUT, const TString &workspace = "combined", const TString &model = "ModelConfig", const TString &dataname = "obsData", const bool &_SM_fix_ = true, const bool & _total_width_fix_ = true, const int &_NOB_ = 5, const int &_NOB_ggf_ = 3, const bool &_ggf_BR_modification_ = true, const bool &_Asimov_ = true, const bool & total_mu_ggf = false, const TString & _mode_ = "vv");
 	~LikelihoodFitting();
 	virtual void DoScan(const int &NumOfScanX = 120, const double &widthX = 0.1, const double &Xmin = -8., const int &NumOfScanY = 120, const double &widthY = 0.1, const double &Ymin = -8., const TString &OutputFilePrefix = OUTPUT_PREFIX);
 };
@@ -153,8 +157,8 @@ private:
 	void TestCouplingIni() ;
 	void TestCouplingReset(double SM = 1., double BSM_1 = 0., bool Fix_BSM_1 = false, double BSM_2 = 0., bool Fix_BSM_2 = false) ;
 public:
-	LikelihoodFitting_1D(const TString &SystErrInput = PATH_TO_TXT + SYS_INPUT, const TString &CouplingInput = PATH_TO_TXT + COUPLING_INPUT_1D, const TString &ReadoutInput = PATH_TO_TXT + READOUT_INPUT_1D, const TString &ggfReadoutInput = PATH_TO_TXT + GGF_READOUT_INPUT_1D, const TString &wsInput = PATH_TO_WORKSPACE + WORKSPACE_INPUT, const TString &workspace = "combined", const TString &model = "ModelConfig", const TString &dataname = "obsData", const bool &_SM_fix_ = true, const bool & _total_width_fix_ = true, const int &_NOB_ = 5, const int &_NOB_ggf_ = 3, const bool &_ggf_BR_modification_ = true, const bool &_Asimov_ = true):
-		LikelihoodFitting(SystErrInput, CouplingInput, ReadoutInput, ggfReadoutInput, wsInput, workspace, model, dataname, _SM_fix_, _total_width_fix_, _NOB_, _NOB_ggf_, _ggf_BR_modification_, _Asimov_)
+	LikelihoodFitting_1D(const TString &SystErrInput = PATH_TO_TXT + SYS_INPUT, const TString &CouplingInput = PATH_TO_TXT + COUPLING_INPUT_1D, const TString &ReadoutInput = PATH_TO_TXT + READOUT_INPUT_1D, const TString &ggfReadoutInput = PATH_TO_TXT + GGF_READOUT_INPUT_1D, const TString &wsInput = PATH_TO_WORKSPACE + WORKSPACE_INPUT, const TString &workspace = "combined", const TString &model = "ModelConfig", const TString &dataname = "obsData", const bool &_SM_fix_ = true, const bool & _total_width_fix_ = true, const int &_NOB_ = 5, const int &_NOB_ggf_ = 3, const bool &_ggf_BR_modification_ = true, const bool &_Asimov_ = true, const bool & _total_mu_ggf_ = false, const TString & _mode_ = "vv"):
+		LikelihoodFitting(SystErrInput, CouplingInput, ReadoutInput, ggfReadoutInput, wsInput, workspace, model, dataname, _SM_fix_, _total_width_fix_, _NOB_, _NOB_ggf_, _ggf_BR_modification_, _Asimov_, _total_mu_ggf_, _mode_)
 	{
 		DerivedClassVariablesIni(ReadoutInput, ggfReadoutInput);
 		DoScan_Uncon();
@@ -176,8 +180,8 @@ private:
 	void TestCouplingReset(double SM = 1., double BSM_1 = 0., bool Fix_BSM_1 = false, double BSM_2 = 0., bool Fix_BSM_2 = false) ;
 
 public:
-	LikelihoodFitting_2D(const TString &SystErrInput = PATH_TO_TXT + SYS_INPUT, const TString &CouplingInput = PATH_TO_TXT + COUPLING_INPUT_2D, const TString &ReadoutInput = PATH_TO_TXT + READOUT_INPUT_2D, const TString &ggfReadoutInput = PATH_TO_TXT + GGF_READOUT_INPUT_1D, const TString &wsInput = PATH_TO_WORKSPACE + WORKSPACE_INPUT, const TString &workspace = "combined", const TString &model = "ModelConfig", const TString &dataname = "obsData", const bool &_SM_fix_ = true, const bool & _total_width_fix_ = true, const int &_NOB_ = 15, const int &_NOB_ggf_ = 6, const bool &_ggf_BR_modification_ = true, const bool &_Asimov_ = true):
-		LikelihoodFitting(SystErrInput, CouplingInput, ReadoutInput, ggfReadoutInput, wsInput, workspace, model, dataname, _SM_fix_, _total_width_fix_, _NOB_, _NOB_ggf_, _ggf_BR_modification_, _Asimov_) 
+	LikelihoodFitting_2D(const TString &SystErrInput = PATH_TO_TXT + SYS_INPUT, const TString &CouplingInput = PATH_TO_TXT + COUPLING_INPUT_2D, const TString &ReadoutInput = PATH_TO_TXT + READOUT_INPUT_2D, const TString &ggfReadoutInput = PATH_TO_TXT + GGF_READOUT_INPUT_1D, const TString &wsInput = PATH_TO_WORKSPACE + WORKSPACE_INPUT, const TString &workspace = "combined", const TString &model = "ModelConfig", const TString &dataname = "obsData", const bool &_SM_fix_ = true, const bool & _total_width_fix_ = true, const int &_NOB_ = 15, const int &_NOB_ggf_ = 6, const bool &_ggf_BR_modification_ = true, const bool &_Asimov_ = true, const bool & _total_mu_ggf_ = false, const TString & _mode_ = "vv"):
+		LikelihoodFitting(SystErrInput, CouplingInput, ReadoutInput, ggfReadoutInput, wsInput, workspace, model, dataname, _SM_fix_, _total_width_fix_, _NOB_, _NOB_ggf_, _ggf_BR_modification_, _Asimov_,_total_mu_ggf_ ,_mode_) 
 	{
 		DerivedClassVariablesIni(ReadoutInput, ggfReadoutInput);
 		DoScan_Uncon();

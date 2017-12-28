@@ -1,0 +1,36 @@
+####################################################################################################################
+####################################################################################################################
+##ALL parameter name should begin with a character; Combination of parameters can be used. E.g. (phi+phi1)/2
+##Available SETTINGS: REWEIGHT DATADRIVEN OBS STACK SUMMARY NOMERGE BYCATEGORY SAVEROOT RATIO
+##NOMERGE: DO NOT MERGE DIFFERENT MINITREES OF THE SAME PROCESS
+##BYCATEGORY: SAVE THE RESULTS BY CATEGORY
+##SUMMARY: SAVE SUMMARY STATISTICS IN TEXT FILE
+##SAVEROOT: SAVE A ROOT FILE FOR EACH HISTOGRAM CREATED
+####################################################################################################################
+####################################################################################################################
+#include SETTING = OBS STACK 
+#include LUMISCALE = 1
+#include WEIGHT = weight_couplings
+#include OUTPUTNAME = output_PARAM_PROCESS
+#include OUTPUTNAME_BYCATEGORY = CATEGORY/output_category_CATEGORY_PROCESS_nominal
+#include OUTPUTNAME_STACK = output_PARAM_MINITREES_stack
+#include OUTPUTNAME_STACK_BYCATEGORY = output_PARAM_MINITREES_CATEGORY_stack
+#include SUMMARYNAME = output_PARAM_statistics
+#include SUMMARYNAME_BYCATEGORY = output_PARAM_CATEGORY_statistics
+#include HISTTITLE = PROCESS_BDT_4bin
+#include KEYS = NAME  NBIN  MIN  MAX  MINITREES  CATEGORY  STYLE DRAWSTYLE  CANVASSTYLE  NORMALIZATION  YMARGIN
+#weight_couplings
+#phi  20  -3.14  3.14  ALL  ALL  None  None  None  None  0.5
+#pt4l_fsr  50  0  200 ALL  ALL  None  None  Logy=True  None  0.35
+m4l_fsr  90  80 170  ALL  ALL  None  None  None  None  0.35
+#phi1 20 -3.14 3.14  ALL  ALL  None  None  None  None  0.5
+#lepton_pt[0]  100  30  300 ALL  ALL  None  None  Logy=True  None  0.35
+#lepton_phi[0]  20  -3.14  3.14  ALL  ALL  None  None  None  None  0.5
+#lepton_eta[0]  20  -5  5  ALL  ALL  None  None  None  None  0.5
+#jet_pt[0]  100  30  300 ALL  ALL  None  None  Logy=True  None  0.35
+#jet_phi[0]  20  -3.14  3.14  ALL  ALL  None  None  None  None  0.5
+jet_eta[0]  20 -5  5  ALL  ALL  None  None  None  None  0.35
+#mZ1_unconstrained  50  80  100  ALL  ALL  None  None  None  None  0.35
+mZ2_unconstrained  50  0  130  ALL  ALL  None  None  None  None  0.35
+#dijet_deltaeta  20  0  5  ALL  2jet_VH,2jet_VBF  None  None  None  None  0.35
+dijet_deltaphi  20  0  6.28  ALL  2jet_VH,2jet_VBF  None  None  None  None  0.35

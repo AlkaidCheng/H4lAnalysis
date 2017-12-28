@@ -1,0 +1,54 @@
+####################################################################################################################
+####################################################################################################################
+##ALL parameter name should begin with a character; Combination of parameters can be used. E.g. (phi+phi1)/2
+##Available SETTINGS: REWEIGHT DATADRIVEN OBS STACK SUMMARY NOMERGE BYCATEGORY SAVEROOT RATIO
+##NOMERGE: DO NOT MERGE DIFFERENT MINITREES OF THE SAME PROCESS
+##BYCATEGORY: SAVE THE RESULTS BY CATEGORY
+##SUMMARY: SAVE SUMMARY STATISTICS IN TEXT FILE
+##SAVEROOT: SAVE A ROOT FILE FOR EACH HISTOGRAM CREATED
+####################################################################################################################
+####################################################################################################################
+#include SETTING = REWEIGHT STACK RATIO NOMERGE
+#include LUMISCALE = 1
+#include WEIGHT = weight_couplings
+#include OUTPUTNAME = output_PARAM_PROCESS
+#include OUTPUTNAME_BYCATEGORY = CATEGORY/output_category_CATEGORY_PROCESS_nominal
+#include OUTPUTNAME_STACK = output_PARAM_MINITREES_stack
+#include OUTPUTNAME_STACK_BYCATEGORY = output_PARAM_MINITREES_CATEGORY_stack
+#include SUMMARYNAME = output_PARAM_statistics
+#include SUMMARYNAME_BYCATEGORY = output_PARAM_CATEGORY_statistics
+#include HISTTITLE = PROCESS_BDT_4bin
+#include KEYS = NAME  NBIN  MIN  MAX  MINITREES  CATEGORY  STYLE DRAWSTYLE  CANVASSTYLE  NORMALIZATION  YMARGIN
+#weight_couplings
+#abs(dijet_deltaphi-3.14)  10  0  3.14  ggH_kSM,ggf_kAorH  2jet_VH,2jet_VBF  None  NOSTACK  None  INDIVIDUAL  0.35
+#dijet_deltaeta  10  0  10  ggH_kSM,ggf_kAorH  2jet_VH,2jet_VBF  None  NOSTACK  None  INDIVIDUAL  0.35
+#abs(dijet_deltaphi-3.14)  10  0  3.14  VBF_kSM,VBF_kAorH  2jet_VBF  None  NOSTACK  None  INDIVIDUAL  0.35
+#dijet_deltaeta  10  0  10  VBF_kSM,VBF_kAorH  2jet_VH,2jet_VBF  None  NOSTACK  None  INDIVIDUAL  0.35
+#abs(dijet_deltaphi-3.14)  10  0  3.14  VH_kSM,VH_kAorH  2jet_VH,2jet_VBF  None  NOSTACK  None  INDIVIDUAL  0.35
+#dijet_deltaeta  10  0  10  VH_kSM,VH_kAorH  2jet_VH,2jet_VBF  None  NOSTACK  None  INDIVIDUAL  0.35
+#abs(dijet_deltaphi-3.14)  10  0  3.14  ggH_kSM,ggH_kA_kH  2jet_VH,2jet_VBF  None  NOSTACK  None  INDIVIDUAL  0.35
+#dijet_deltaeta  10  0  10  ggH_kSM,ggH_kA_kH  2jet_VH,2jet_VBF  None  NOSTACK  None  INDIVIDUAL  0.35
+#leading_jet_pt  25  0  200  ggH_kSM,ggf_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#leading_jet_pt  25  0  200  VBF_kSM,VBF_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#leading_jet_pt  25  0  200 VH_kSM,VH_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#leading_jet_pt  25  0  200 ggH_kSM,ggH_kA_kH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#jet_eta[0]  10  -5  5  ggH_kSM,ggf_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#jet_eta[0]  10  -5  5  VBF_kSM,VBF_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#jet_eta[0]  10  -5  5  VH_kSM,VH_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#jet_eta[0]  10  -5  5  ggH_kSM,ggH_kA_kH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#jet_phi[0]  10  -3.14  3.14  ggH_kSM,ggf_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#jet_phi[0]  10  -3.14  3.14  VBF_kSM,VBF_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#jet_phi[0]  10  -3.14  3.14  ggH_kSM,ggH_kA_kH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#jet_phi[0]  10  -3.14  3.14  VH_kSM,VH_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+pt4l_fsr  15  0  400  ggH_kSM,ggf_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+pt4l_fsr  15  0  400  VBF_kSM,VBF_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+pt4l_fsr  15  0  400  VH_kSM,VH_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35  0.35
+pt4l_fsr  15  0  400  ggH_kSM,ggH_kA_kH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35  0.35
+#mZ1_unconstrained  10  0  100  ggH_kSM,ggf_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#mZ1_unconstrained  10  0  100  VBF_kSM,VBF_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#mZ1_unconstrained  10  0  100  VH_kSM,VH_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#mZ1_unconstrained  10  0  100  ggH_kSM,ggH_kA_kH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#mZ2_unconstrained  10  0  100  ggH_kSM,ggf_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#mZ2_unconstrained  10  0  100  VBF_kSM,VBF_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#mZ2_unconstrained  10  0  100  VH_kSM,VH_kAorH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35
+#mZ2_unconstrained  10  0  100  ggH_kSM,ggH_kA_kH  ALL  None  NOSTACK  None  INDIVIDUAL  0.35

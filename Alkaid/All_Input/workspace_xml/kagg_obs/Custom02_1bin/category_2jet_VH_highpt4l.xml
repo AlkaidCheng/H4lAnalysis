@@ -1,0 +1,54 @@
+<!DOCTYPE Channel SYSTEM '/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_xml/HistFactorySchema.dtd'>
+
+<Channel Name="c_2jet_VH_highpt4l" HistoName="">
+  <Data  InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_data_run_2_obs_nominal.root" HistoName="data_run_2_obs_Custom02_1bin" HistoPath = ""/>
+ <StatErrorConfig RelErrorThreshold= "0." ConstraintType="Poisson" />
+
+  <Sample Name="ggfMG5_0p" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_ggfMG5_0p_nominal.root" HistoPath="" HistoName="ggfMG5_0p_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_ggf_BSM0" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+  <Sample Name="ggfMG5_Khgg1_Kagg0p5" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_ggfMG5_Khgg1_Kagg0p5_nominal.root" HistoPath="" HistoName="ggfMG5_Khgg1_Kagg0p5_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_ggf_BSM1" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+  <Sample Name="ggfMG5_Khgg1_Kaggm0p5" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_ggfMG5_Khgg1_Kaggm0p5_nominal.root" HistoPath="" HistoName="ggfMG5_Khgg1_Kaggm0p5_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+    <NormFactor Name ="mu_ggf_BSM2" High="90.000000" Low="0.000000" Val="1.000000" Const="True"/>
+  </Sample>
+
+  <Sample Name="ZZllll" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_ZZllll_nominal.root" HistoPath="" HistoName="ZZllll_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="vbfMG5_0p" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_vbfMG5_0p_nominal.root" HistoPath="" HistoName="vbfMG5_0p_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="ggZZ_2mu2e" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_ggZZ_2mu2e_nominal.root" HistoPath="" HistoName="ggZZ_2mu2e_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="ggZZ_4l" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_ggZZ_4l_nominal.root" HistoPath="" HistoName="ggZZ_4l_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="Redu_Bkg" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_Redu_Bkg_nominal.root" HistoPath="" HistoName="Redu_Bkg_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="ttH" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_ttH_nominal.root" HistoPath="" HistoName="ttH_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="MC_REDU_BKG" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_MC_REDU_BKG_nominal.root" HistoPath="" HistoName="MC_REDU_BKG_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+  <Sample Name="bbH_SUM" InputFile= "/afs/cern.ch/user/c/clcheng/ATLAS/Alkaid//All_Input/input_sample//Custom02_1bin/2jet_VH_highpt4l/output_category_2jet_VH_highpt4l_bbH_SUM_nominal.root" HistoPath="" HistoName="bbH_SUM_Custom02_1bin" NormalizeByTheory="True">
+    <StatError Activate="False"/> 
+  </Sample>
+
+</Channel>
